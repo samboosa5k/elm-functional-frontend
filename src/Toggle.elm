@@ -42,7 +42,9 @@ init =
 
 
 type Msg
-    = Button1 | Button2 | Button3
+    = Button1
+    | Button2
+    | Button3
 
 
 update : Msg -> Model -> Model
@@ -57,13 +59,16 @@ update msg model =
         Button3 ->
             { model | button3 = True }
 
-stringFromBool : Bool -> String 
+
+stringFromBool : Bool -> String
 stringFromBool bool =
     if bool then
         "True"
-    
+
     else
         "False"
+
+
 
 -- VIEW
 
@@ -71,7 +76,7 @@ stringFromBool bool =
 view : Model -> Html Msg
 view model =
     div []
-        [ button [ onClick Button1 ] [ text "Button 1", text ( stringFromBool model.button1 ) ]
-        , button [ onClick Button2 ] [ text "Button 2", text ( stringFromBool model.button2 ) ]
-        , button [ onClick Button3 ] [ text "Button 3", text ( stringFromBool model.button3 ) ]
+        [ button [ onClick Button1 ] [ text "Button 1", text (stringFromBool model.button1) ]
+        , button [ onClick Button2 ] [ text "Button 2", text (stringFromBool model.button2) ]
+        , button [ onClick Button3 ] [ text "Button 3", text (stringFromBool model.button3) ]
         ]
