@@ -1,46 +1,64 @@
 module Gallery exposing (..)
 
-import Image exposing ( image, updateImage)
-import Image exposing ( ImageModel, Msg )
+import Browser
+import Html exposing (Html, div)
+import Image exposing (image)
+
 
 
 -- MAIN
---
---
-imageModel : ImageModel
-imageModel =
-    { src = "./image.jpg"
-    , alt = "image-description"
-    , class = "image__thumb"
-    , caption = "an image caption"
+
+
+main =
+    Browser.sandbox { init = initialModel, update = update, view = view }
+
+
+
+-- MODEL
+
+
+type alias GalleryModel =
+    { images : List Image.Model }
+
+
+initialModel : GalleryModel
+initialModel =
+    { images =
+        [ { src = "./image.jpg"
+          , alt = "image-description"
+          , class = "image__thumb"
+          , caption = "1st image caption"
+          }
+        , { src = "./image.jpg"
+          , alt = "image-description"
+          , class = "image__thumb"
+          , caption = "another caption"
+          }
+        ]
     }
 
---
---
--- MODEl
---
-galleryModel : List ImageModel
-galleryModel =
-    { src = "./image.jpg"
-    , alt = "image-description"
-    , class = "image__thumb"
-    , caption = "an image caption"
-    }
---
-
-
-GalleryInit : ( GalleryModel -> Cmd Msg )
 
 
 -- UPDATE
---
---
-update
---
---
+-- The purpose of this update is just to satisfy the browser.sandbox type
+-- signature. There is no actual updating.
+
+
+update msg model =
+    case msg of
+        _ ->
+            model
+
+
+
 -- VIEW
---
---
---
---
+
+
+view : GalleryModel -> Html Image.Model
+view model =
+    div []
+        (List.map image model.images)
+
+
+
 --
