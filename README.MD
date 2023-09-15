@@ -1,5 +1,10 @@
 # Elm - A delightful language for reliable webapps.
 
+https://elmprogramming.com/model-view-update-part-1.html
+
+
+
+
 ![Elm Link](https://elm-lang.org/)
 
 ```
