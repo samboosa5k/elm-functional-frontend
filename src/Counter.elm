@@ -1,59 +1,47 @@
-module Counter exposing (..)
+module Counter exposing (main)
 
 import Browser
-import Html exposing (Html, button, div, text)
-import Html.Events exposing (onClick)
-
-
-
--- MAIN
-
-
-main : Program () Model Msg
-main =
-    Browser.sandbox { init = init, update = update, view = view }
-
-
-
--- MODEL
+import Html exposing (..)
+import Html.Events exposing (..)
 
 
 type alias Model =
     Int
 
 
-init : Model
-init =
+initialModel : Model
+initialModel =
     0
-
-
-
--- UPDATE
-
-
-type Msg
-    = Increment
-    | Decrement
-
-
-update : Msg -> Model -> Model
-update msg model =
-    case msg of
-        Increment ->
-            model + 1
-
-        Decrement ->
-            model - 1
-
-
-
--- VIEW
 
 
 view : Model -> Html Msg
 view model =
     div []
         [ button [ onClick Decrement ] [ text "-" ]
-        , div [] [ text (String.fromInt model) ]
+        , text (String.fromInt model)
         , button [ onClick Increment ] [ text "+" ]
         ]
+
+
+update : Msg -> Model -> Model
+update msg model =
+    case msg of
+        Decrement ->
+            model - 1
+
+        Increment ->
+            model + 1
+
+
+type Msg
+    = Decrement
+    | Increment
+
+
+main : Program () Model Msg
+main =
+    Browser.sandbox
+        { init = initialModel
+        , view = view
+        , update = update
+        }
