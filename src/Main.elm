@@ -1,6 +1,8 @@
 module Main exposing (main)
 
-import Html exposing (Html, div, h1, section, text)
+import Browser
+import Html exposing (Html, button, div, h1, section, text)
+import Html.Events exposing (onClick)
 
 
 
@@ -28,15 +30,13 @@ title titleModel =
 
 
 type alias ContentModel =
-    { title : String
-    , text : String
+    { text : String
     }
 
 
 contentInit : ContentModel
 contentInit =
-    { title = "App Title"
-    , text = "Nested app text"
+    { text = "Nested app text"
     }
 
 
@@ -47,14 +47,77 @@ contentInit =
 content : ContentModel -> Html msg
 content contentModel =
     div []
-        [ div [] [ text contentModel.title ]
-        , div [] [ text contentModel.text ]
+        [ div [] [ text contentModel.text ]
         ]
 
 
-main : Html msg
-main =
+
+-- MODEL
+
+
+type ShowMsg
+    = Show
+    | Hide
+
+
+
+-- type ShowMsgHtml
+--     = Int
+
+
+getContent : Int -> Html msg
+getContent a =
+    case a of
+        0 ->
+            content contentInit
+
+        1 ->
+            title titleInit
+
+        _ ->
+            title titleInit
+
+
+type alias Model =
+    { activeComponent : Int
+    }
+
+
+init : Model
+init =
+    { activeComponent = 0 }
+
+
+update : ShowMsg -> Model -> Model
+update showMsg model =
+    case showMsg of
+        Show ->
+            { model | activeComponent = 0 }
+
+        Hide ->
+            { model | activeComponent = 1 }
+
+
+view : Model -> Html ShowMsg
+view model =
     section []
-        [ title titleInit
-        , content contentInit
+        [ div []
+            [ button [ onClick Show ] [ text "SHOW" ]
+            , button [ onClick Hide ] [ text "HIDE" ]
+            ]
+        , div []
+            [ title titleInit
+            , content contentInit
+            ]
+        , div []
+            [ getContent model.activeComponent ]
         ]
+
+
+main : Program () Model ShowMsg
+main =
+    Browser.sandbox
+        { init = init
+        , update = update
+        , view = view
+        }
