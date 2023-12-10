@@ -9,7 +9,7 @@ import Html.Events exposing (onClick)
 -- MAIN
 
 
-main : Program () Model Msg
+main : Program () Model ToggleMsg
 main =
     Browser.sandbox
         { init = init
@@ -41,13 +41,13 @@ init =
 -- UPDATE
 
 
-type Msg
+type ToggleMsg
     = Button1
     | Button2
     | Button3
 
 
-update : Msg -> Model -> Model
+update : ToggleMsg -> Model -> Model
 update msg model =
     case msg of
         Button1 ->
@@ -73,7 +73,7 @@ stringFromBool bool =
 -- VIEW
 
 
-view : Model -> Html Msg
+view : Model -> Html ToggleMsg
 view model =
     div []
         [ button [ onClick Button1 ] [ text "Button 1", text (stringFromBool model.button1) ]
