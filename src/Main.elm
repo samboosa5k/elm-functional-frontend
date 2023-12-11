@@ -7,7 +7,7 @@ import ItemList exposing (..)
 
 
 
--- VIEW
+-- MODEL
 
 
 type alias TitleModel =
@@ -15,10 +15,8 @@ type alias TitleModel =
     }
 
 
-titleInit : TitleModel
-titleInit =
-    { text = "This is the title"
-    }
+
+-- VIEW
 
 
 title : TitleModel -> Html msg
@@ -30,30 +28,22 @@ title titleModel =
 -- MODEL
 
 
-type alias ContentModel =
-    { text : String
+type alias Model =
+    { titleComponent : TitleModel
+    , listItems : ItemList.Model
     }
 
 
-contentInit : ContentModel
-contentInit =
-    { text = "Nested app text"
+init : Model
+init =
+    { titleComponent =
+        { text = "Default Title" }
+    , listItems = []
     }
 
 
 
--- VIEW
-
-
-content : ContentModel -> Html msg
-content contentModel =
-    div []
-        [ div [] [ text contentModel.text ]
-        ]
-
-
-
--- MODEL
+-- UPDATE
 
 
 type ShowMsg
@@ -61,42 +51,24 @@ type ShowMsg
     | Hide
 
 
-
--- type ShowMsgHtml
---     = Int
-
-
-getContent : Int -> Html msg
-getContent a =
-    case a of
-        0 ->
-            content contentInit
-
-        1 ->
-            title titleInit
-
-        _ ->
-            title titleInit
-
-
-type alias Model =
-    { activeComponent : Int
-    }
-
-
-init : Model
-init =
-    { activeComponent = 0 }
-
-
 update : ShowMsg -> Model -> Model
 update showMsg model =
     case showMsg of
-        Show ->
-            { model | activeComponent = 0 }
-
         Hide ->
-            { model | activeComponent = 1 }
+            { model
+                | titleComponent = init.titleComponent
+                , listItems = init.listItems
+            }
+
+        Show ->
+            { model
+                | titleComponent = { text = "Data list" }
+                , listItems = ItemList.initialList
+            }
+
+
+
+-- VIEW
 
 
 view : Model -> Html ShowMsg
@@ -107,12 +79,15 @@ view model =
             , button [ onClick Hide ] [ text "HIDE" ]
             ]
         , div []
-            [ title titleInit
-            , content contentInit
+            [ title model.titleComponent
             ]
         , div []
-            [ getContent model.activeComponent ]
+            (List.map ItemList.update model.listItems)
         ]
+
+
+
+-- MAIN
 
 
 main : Program () Model ShowMsg
