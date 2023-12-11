@@ -1,26 +1,37 @@
-# Elm - A delightful language for reliable webapps.
+# Elm Functional Frontend
 
-https://elmprogramming.com/model-view-update-part-1.html
-
-
-
-
-![Elm Link](https://elm-lang.org/)
-
-```
--   No runtime errors in practice.
--   Friendly error messages.
--   Reliable refactoring.
--   Automatically enforced semantic versioning for all Elm packages.
-```
+This repo is a demonstration of my attempt to learn [Elm](https://elm-lang.org), with the end goal of being able to build _delightful_ web-apps in this purely functional language.
 
 ---
 
-This repo represents my efforts to learn about Elm (a purely functional language) with the end goal of building a simple webapp.
+## Table of Contents:
 
-**Personal Motivation:**
+-   [Elm vs. React/Javascript](#elm-vs-reactjavascript)
+-   [Resources](#resources)
+-   [Contributors](#contributors)
 
-- No runtime exceptions
-- Functional purity
-- Immutable data
-- NO FUNNY BUSINESS
+---
+
+## Elm vs. React/Javascript:
+
+-   No runtime exceptions
+-   Functional purity
+-   Strongly typed, immutable data
+-   If it compiles, it works.
+
+---
+
+## Resources
+
+The following is a list of documentation and resources used:
+
+-   [Elm Guide](https://guide.elm-lang.org/) - Basic documentation
+-   [Elm Programming](https://elmprogramming.com/) - Tutorials and guides
+    -   [Model View Update](https://elmprogramming.com/model-view-update-part-1.html) - The Elm Architecture
+-   [Converting React App To Elm](https://blog.joelabshier.com/converting-react-app-to-elm-app/) - A helpful guide for React developers wanting to learn Elm
+
+---
+
+## Contributors
+
+-   [Jasper V](https://github.com/samboosa5k)
