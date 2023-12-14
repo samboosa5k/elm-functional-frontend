@@ -1,27 +1,8 @@
-module Main exposing (main)
+module Main exposing (..)
 
 import Browser
-import Html exposing (Html, button, div, h1, section, text)
+import Html exposing (Html, div, h1, header, li, main_, nav, section, text, ul)
 import Html.Events exposing (onClick)
-import ItemList exposing (..)
-
-
-
--- MODEL
-
-
-type alias TitleModel =
-    { text : String
-    }
-
-
-
--- VIEW
-
-
-title : TitleModel -> Html msg
-title titleModel =
-    h1 [] [ text titleModel.text ]
 
 
 
@@ -29,16 +10,19 @@ title titleModel =
 
 
 type alias Model =
-    { titleComponent : TitleModel
-    , listItems : ItemList.Model
+    { title : String
     }
 
 
-init : Model
-init =
-    { titleComponent =
-        { text = "Default Title" }
-    , listItems = []
+homePageData : Model
+homePageData =
+    { title = "Home"
+    }
+
+
+aboutPageData : Model
+aboutPageData =
+    { title = "About"
     }
 
 
@@ -46,43 +30,49 @@ init =
 -- UPDATE
 
 
-type ShowMsg
-    = Show
-    | Hide
+type ViewMsg
+    = Home
+    | About
 
 
-update : ShowMsg -> Model -> Model
-update showMsg model =
-    case showMsg of
-        Hide ->
-            { model
-                | titleComponent = init.titleComponent
-                , listItems = init.listItems
-            }
+type Msg
+    = SetViewState ViewMsg
 
-        Show ->
-            { model
-                | titleComponent = { text = "Data list" }
-                , listItems = ItemList.initialList
-            }
+
+update : Msg -> Model -> Model
+update msg model =
+    case msg of
+        SetViewState Home ->
+            { model | title = homePageData.title }
+
+        SetViewState About ->
+            { model | title = aboutPageData.title }
 
 
 
 -- VIEW
 
 
-view : Model -> Html ShowMsg
+view : Model -> Html Msg
 view model =
-    section []
-        [ div []
-            [ button [ onClick Show ] [ text "SHOW" ]
-            , button [ onClick Hide ] [ text "HIDE" ]
+    div []
+        [ header []
+            [ nav []
+                [ ul []
+                    [ li [ onClick (SetViewState Home) ] [ text "Home" ]
+                    , li [ onClick (SetViewState About) ] [ text "About" ]
+                    , li [] [ text "Contact" ]
+                    ]
+                ]
             ]
-        , div []
-            [ title model.titleComponent
+        , main_ []
+            [ section []
+                [ div []
+                    [ h1 [] [ text "Section ++  H1 -> Heading ", text model.title ]
+                    , div [] [ text "Section -> Div -> Text" ]
+                    ]
+                ]
             ]
-        , div []
-            (List.map ItemList.update model.listItems)
         ]
 
 
@@ -90,10 +80,10 @@ view model =
 -- MAIN
 
 
-main : Program () Model ShowMsg
+main : Program () Model Msg
 main =
     Browser.sandbox
-        { init = init
+        { init = { title = "Hello World" }
         , update = update
         , view = view
         }

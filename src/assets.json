@@ -1,0 +1,16 @@
+{
+    "images": [
+        {
+            "id": 1,
+            "url": "fedora-magazine.png",
+            "name": "Fedora Logo",
+            "description": "Fedora logo from fedoraproject.org"
+        },
+        {
+            "id": 2,
+            "url": "image.jpg",
+            "name": "This will be a normal image",
+            "description": "This is an example of a normal image"
+        }
+    ]
+}
