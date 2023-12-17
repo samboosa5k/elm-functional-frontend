@@ -2,12 +2,12 @@ module Main exposing (..)
 
 import Browser
 import Browser.Navigation as Nav
-import Html exposing (Html, a, div, h1, h2, header, li, main_, nav, section, text, ul)
+import Html exposing (Html, a, div, h1, h2, header, li, main_, nav, p, section, text, ul)
 import Html.Attributes exposing (href)
 import Html.Events exposing (onClick)
+import Route exposing (Route)
 import Switch exposing (init)
 import Url
-import Url.Parser exposing (Parser, map, oneOf, s)
 
 
 
@@ -15,35 +15,13 @@ import Url.Parser exposing (Parser, map, oneOf, s)
 -- MODEL
 
 
-type View
-    = Home
-    | About
-    | NotFound
-
-
 type ViewMsg
-    = SetViewState View
+    = SetViewState Route
 
 
 
 -- ROUTE PARSING
 -- MODEL
-
-
-type Route
-    = View String
-
-
-routeParser : Parser (View -> a) a
-routeParser =
-    oneOf
-        [ map Home (s "/")
-        , map Home (s "home")
-        , map About (s "about")
-        ]
-
-
-
 -- MODEL
 
 
@@ -78,25 +56,25 @@ routeUpdate : String -> ViewMsg
 routeUpdate parsedUrl =
     case parsedUrl of
         "home" ->
-            SetViewState Home
+            SetViewState Route.Home
 
         "about" ->
-            SetViewState About
+            SetViewState Route.About
 
         _ ->
-            SetViewState NotFound
+            SetViewState Route.NotFound
 
 
 viewUpdate : ViewMsg -> ViewModel -> ViewModel
 viewUpdate msg model =
     case msg of
-        SetViewState Home ->
+        SetViewState Route.Home ->
             { model | title = homePageData.title }
 
-        SetViewState About ->
+        SetViewState Route.About ->
             { model | title = aboutPageData.title }
 
-        SetViewState NotFound ->
+        SetViewState Route.NotFound ->
             { model | title = notFoundPageData.title }
 
 
@@ -218,6 +196,11 @@ view model =
     }
 
 
+baseHref : String
+baseHref =
+    "/src"
+
+
 viewLink : String -> Html msg
 viewLink path =
-    li [] [ a [ href path ] [ text path ] ]
+    li [] [ a [ href (baseHref ++ path) ] [ text (baseHref ++ path) ] ]
