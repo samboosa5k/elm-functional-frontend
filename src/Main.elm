@@ -2,114 +2,12 @@ module Main exposing (..)
 
 import Browser
 import Browser.Navigation as Nav
-import Html exposing (Html, a, div, h1, h2, header, li, main_, nav, p, section, text, ul)
+import Html exposing (Html, a, h1, h2, li, p, text, ul)
 import Html.Attributes exposing (href)
-import Html.Events exposing (onClick)
+import Page
 import Route exposing (Route)
 import Switch exposing (init)
 import Url
-
-
-
--- ROUTES
--- MODEL
-
-
-type ViewMsg
-    = SetViewState Route
-
-
-
--- ROUTE PARSING
--- MODEL
--- MODEL
-
-
-type alias ViewModel =
-    { title : String
-    }
-
-
-homePageData : ViewModel
-homePageData =
-    { title = "Home"
-    }
-
-
-aboutPageData : ViewModel
-aboutPageData =
-    { title = "About"
-    }
-
-
-notFoundPageData : ViewModel
-notFoundPageData =
-    { title = "Not Found"
-    }
-
-
-
--- UPDATE
-
-
-routeUpdate : String -> ViewMsg
-routeUpdate parsedUrl =
-    case parsedUrl of
-        "home" ->
-            SetViewState Route.Home
-
-        "about" ->
-            SetViewState Route.About
-
-        _ ->
-            SetViewState Route.NotFound
-
-
-viewUpdate : ViewMsg -> ViewModel -> ViewModel
-viewUpdate msg model =
-    case msg of
-        SetViewState Route.Home ->
-            { model | title = homePageData.title }
-
-        SetViewState Route.About ->
-            { model | title = aboutPageData.title }
-
-        SetViewState Route.NotFound ->
-            { model | title = notFoundPageData.title }
-
-
-
--- VIEW
-
-
-viewContent : ViewModel -> Html ViewMsg
-viewContent model =
-    div []
-        [ header []
-            [ nav []
-                [ ul []
-                    [ li [ onClick (routeUpdate "home") ] [ text "Home" ]
-                    , li [ onClick (routeUpdate "about") ] [ text "About" ]
-                    , li [] [ text "Contact" ]
-                    ]
-                ]
-            ]
-
-        -- , nav []
-        --     [ ul []
-        --         [ a [ href "/" ] [ text "Home" ]
-        --         , a [ href "about" ] [ text "About" ]
-        --         ]
-        --     ]
-        , main_ []
-            [ section []
-                [ div []
-                    [ h1 [] [ text "Section ++  H1 -> Heading ", text model.title ]
-                    , div [] [ text "Section -> Div -> Text" ]
-                    ]
-                ]
-            ]
-        ]
 
 
 
@@ -135,12 +33,13 @@ main =
 type alias Model =
     { key : Nav.Key
     , url : Url.Url
+    , route : Route
     }
 
 
 init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init _ url key =
-    ( Model key url, Cmd.none )
+    ( Model key url Route.Root, Cmd.none )
 
 
 
@@ -164,7 +63,10 @@ update msg model =
                     ( model, Nav.load href )
 
         UrlChanged url ->
-            ( { model | url = url }
+            ( { model
+                | url = url
+                , route = Maybe.withDefault model.route (Route.fromUrl url)
+              }
             , Cmd.none
             )
 
@@ -187,20 +89,22 @@ view model =
     { title = "URL Interceptor"
     , body =
         [ text "The current URL is: "
-        , h2 [] [ text (Url.toString model.url) ]
+        , p [] [ text (Url.toString model.url) ]
         , ul []
-            [ viewLink "/home"
-            , viewLink "/about"
+            [ viewLink Route.Home "Home"
+            , viewLink Route.About "About"
+            , viewLink Route.NotFound "404"
             ]
+        , h2
+            []
+            [ text "The resolved route: " ]
+        , p [] [ text (Route.routeToString model.route) ]
+        , h1 [] [ text "The content:" ]
+        , Page.viewer model.route
         ]
     }
 
 
-baseHref : String
-baseHref =
-    "/src"
-
-
-viewLink : String -> Html msg
-viewLink path =
-    li [] [ a [ href (baseHref ++ path) ] [ text (baseHref ++ path) ] ]
+viewLink : Route -> String -> Html msg
+viewLink route label =
+    li [] [ a [ Route.routeHref route ] [ text label ] ]

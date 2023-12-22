@@ -1,11 +1,11 @@
-module Page exposing (..)
+module Page exposing (viewer)
 
 import Html exposing (Html, div, text)
 import Route exposing (Route)
 
 
-page : Route -> Html msg
-page route =
+viewer : Route -> Html msg
+viewer route =
     case route of
         Route.Home ->
             div [] [ text "I am home" ]
@@ -13,5 +13,5 @@ page route =
         Route.About ->
             div [] [ text "About me page" ]
 
-        Route.NotFound ->
+        _ ->
             div [] [ text "This page is not found" ]

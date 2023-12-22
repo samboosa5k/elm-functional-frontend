@@ -1,19 +1,22 @@
-module Route exposing (Route(..), fromUrl, replaceUrl, routeHref, routeParser)
+module Route exposing (Route(..), fromUrl, replaceUrl, routeHref, routeParser, routeToString)
 
 import Browser.Navigation as Nav
 import Html exposing (Attribute)
 import Html.Attributes as Attr
 import Url exposing (Url)
-import Url.Parser as Parser exposing (Parser, oneOf, s)
+import Url.Parser as Parser exposing ((</>), Parser, oneOf, s)
 
 
 
 -- Example @ https://github.com/rtfeldman/elm-spa-example/blob/master/src/Route.elm
+--
+--
 -- ROUTING
 
 
 type Route
-    = Home
+    = Root
+    | Home
     | About
     | NotFound
 
@@ -22,6 +25,7 @@ routeParser : Parser (Route -> a) a
 routeParser =
     oneOf
         [ Parser.map Home Parser.top
+        , Parser.map Home (s "home")
         , Parser.map About (s "about")
         , Parser.map NotFound (s "404")
         ]
@@ -34,8 +38,11 @@ routeParser =
 routeToPieces : Route -> List String
 routeToPieces route =
     case route of
+        Root ->
+            [ "" ]
+
         Home ->
-            []
+            [ "home" ]
 
         About ->
             [ "about" ]
