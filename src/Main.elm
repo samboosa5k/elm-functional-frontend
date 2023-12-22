@@ -1,27 +1,29 @@
-module Main exposing (main)
+module Main exposing (..)
 
 import Browser
-import Html exposing (Html, button, div, h1, section, text)
-import Html.Events exposing (onClick)
-import ItemList exposing (..)
+import Browser.Navigation as Nav
+import Html exposing (Html, a, h1, h2, li, p, text, ul)
+import Html.Attributes exposing (href)
+import Page
+import Route exposing (Route)
+import Switch exposing (init)
+import Url
 
 
 
--- MODEL
+--  MAIN
 
 
-type alias TitleModel =
-    { text : String
-    }
-
-
-
--- VIEW
-
-
-title : TitleModel -> Html msg
-title titleModel =
-    h1 [] [ text titleModel.text ]
+main : Program () Model Msg
+main =
+    Browser.application
+        { init = init
+        , view = view
+        , update = update
+        , subscriptions = subscriptions
+        , onUrlChange = UrlChanged
+        , onUrlRequest = LinkClicked
+        }
 
 
 
@@ -29,71 +31,80 @@ title titleModel =
 
 
 type alias Model =
-    { titleComponent : TitleModel
-    , listItems : ItemList.Model
+    { key : Nav.Key
+    , url : Url.Url
+    , route : Route
     }
 
 
-init : Model
-init =
-    { titleComponent =
-        { text = "Default Title" }
-    , listItems = []
-    }
+init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
+init _ url key =
+    ( Model key url Route.Root, Cmd.none )
 
 
 
 -- UPDATE
 
 
-type ShowMsg
-    = Show
-    | Hide
+type Msg
+    = LinkClicked Browser.UrlRequest
+    | UrlChanged Url.Url
 
 
-update : ShowMsg -> Model -> Model
-update showMsg model =
-    case showMsg of
-        Hide ->
-            { model
-                | titleComponent = init.titleComponent
-                , listItems = init.listItems
-            }
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
+    case msg of
+        LinkClicked urlRequest ->
+            case urlRequest of
+                Browser.Internal url ->
+                    ( model, Nav.pushUrl model.key (Url.toString url) )
 
-        Show ->
-            { model
-                | titleComponent = { text = "Data list" }
-                , listItems = ItemList.initialList
-            }
+                Browser.External href ->
+                    ( model, Nav.load href )
+
+        UrlChanged url ->
+            ( { model
+                | url = url
+                , route = Maybe.withDefault model.route (Route.fromUrl url)
+              }
+            , Cmd.none
+            )
+
+
+
+-- SUBSCRIPTIONS
+
+
+subscriptions : Model -> Sub Msg
+subscriptions _ =
+    Sub.none
 
 
 
 -- VIEW
 
 
-view : Model -> Html ShowMsg
+view : Model -> Browser.Document Msg
 view model =
-    section []
-        [ div []
-            [ button [ onClick Show ] [ text "SHOW" ]
-            , button [ onClick Hide ] [ text "HIDE" ]
+    { title = "URL Interceptor"
+    , body =
+        [ text "The current URL is: "
+        , p [] [ text (Url.toString model.url) ]
+        , ul []
+            [ viewLink Route.Home "Home"
+            , viewLink Route.About "About"
+            , viewLink Route.NotFound "404"
             ]
-        , div []
-            [ title model.titleComponent
-            ]
-        , div []
-            (List.map ItemList.update model.listItems)
+        , h2
+            []
+            [ text "The resolved route: " ]
+        , p [] [ text (Route.routeToString model.route) ]
+        , h1 [] [ text "The content:" ]
+        , Page.viewer model.route
         ]
+    }
 
 
-
--- MAIN
-
-
-main : Program () Model ShowMsg
-main =
-    Browser.sandbox
-        { init = init
-        , update = update
-        , view = view
-        }
+viewLink : Route -> String -> Html msg
+viewLink route label =
+    li [] [ a [ Route.routeHref route ] [ text label ] ]
