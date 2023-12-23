@@ -6051,8 +6051,7 @@ var $elm$html$Html$p = _VirtualDom_node('p');
 var $author$project$Route$routeToPieces = function (route) {
 	switch (route.$) {
 		case 'Root':
-			return _List_fromArray(
-				['']);
+			return _List_Nil;
 		case 'Home':
 			return _List_fromArray(
 				['home']);
@@ -6081,6 +6080,14 @@ var $author$project$Page$navLinks = _List_fromArray(
 	]);
 var $author$project$Page$viewContent = function (route) {
 	switch (route.$) {
+		case 'Root':
+			return A2(
+				$elm$html$Html$div,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text('I am at /')
+					]));
 		case 'Home':
 			return A2(
 				$elm$html$Html$div,
@@ -6108,8 +6115,6 @@ var $author$project$Page$viewContent = function (route) {
 	}
 };
 var $elm$html$Html$header = _VirtualDom_node('header');
-var $elm$html$Html$a = _VirtualDom_node('a');
-var $elm$html$Html$li = _VirtualDom_node('li');
 var $elm$json$Json$Encode$string = _Json_wrap;
 var $elm$html$Html$Attributes$stringProperty = F2(
 	function (key, string) {
@@ -6118,6 +6123,9 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 			key,
 			$elm$json$Json$Encode$string(string));
 	});
+var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
+var $elm$html$Html$a = _VirtualDom_node('a');
+var $elm$html$Html$li = _VirtualDom_node('li');
 var $elm$html$Html$Attributes$href = function (url) {
 	return A2(
 		$elm$html$Html$Attributes$stringProperty,
@@ -6151,7 +6159,10 @@ var $elm$html$Html$ul = _VirtualDom_node('ul');
 var $author$project$Page$navBar = function (linkList) {
 	return A2(
 		$elm$html$Html$nav,
-		_List_Nil,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('nav__menu')
+			]),
 		_List_fromArray(
 			[
 				A2(

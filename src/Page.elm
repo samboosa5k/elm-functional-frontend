@@ -1,6 +1,7 @@
 module Page exposing (..)
 
 import Html exposing (Html, a, div, header, li, main_, nav, text, ul)
+import Html.Attributes exposing (class)
 import Route exposing (Route)
 
 
@@ -28,7 +29,7 @@ link navLink =
 
 navBar : List NavLink -> Html msg
 navBar linkList =
-    nav []
+    nav [ class "nav__menu" ]
         [ ul []
             (List.map
                 link
@@ -47,6 +48,9 @@ viewHeader linkList =
 viewContent : Route -> Html msg
 viewContent route =
     case route of
+        Route.Root ->
+            div [] [ text "I am at /" ]
+
         Route.Home ->
             div [] [ text "I am home" ]
 

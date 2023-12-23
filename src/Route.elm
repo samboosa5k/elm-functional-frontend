@@ -39,7 +39,7 @@ routeToPieces : Route -> List String
 routeToPieces route =
     case route of
         Root ->
-            [ "" ]
+            []
 
         Home ->
             [ "home" ]
