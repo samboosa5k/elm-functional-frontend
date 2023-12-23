@@ -2,11 +2,10 @@ module Main exposing (..)
 
 import Browser
 import Browser.Navigation as Nav
-import Html exposing (Html, a, h1, h2, li, p, text, ul)
+import Html exposing (p, text)
 import Html.Attributes exposing (href)
 import Page
 import Route exposing (Route)
-import Switch exposing (init)
 import Url
 
 
@@ -86,25 +85,12 @@ subscriptions _ =
 
 view : Model -> Browser.Document Msg
 view model =
-    { title = "URL Interceptor"
+    { title = "Jasper's Elm App"
     , body =
         [ text "The current URL is: "
         , p [] [ text (Url.toString model.url) ]
-        , ul []
-            [ viewLink Route.Home "Home"
-            , viewLink Route.About "About"
-            , viewLink Route.NotFound "404"
-            ]
-        , h2
-            []
-            [ text "The resolved route: " ]
+        , text "The resolved route is: "
         , p [] [ text (Route.routeToString model.route) ]
-        , h1 [] [ text "The content:" ]
         , Page.viewer model.route
         ]
     }
-
-
-viewLink : Route -> String -> Html msg
-viewLink route label =
-    li [] [ a [ Route.routeHref route ] [ text label ] ]
