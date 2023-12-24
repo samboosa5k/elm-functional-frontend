@@ -1,24 +1,2 @@
-body {
-    font-size: 16px;
-    margin: 1em;
-}
-
-.nav__menu {
-    position: relative;
-    display: block;
-    background: rgba(10,10,10, .1);
-}
-
-.nav__menu ul {
-    position: relative;
-    display: flex;
-    flex-direction: row;
-    list-style-type: none;
-}
-
-.nav__menu ul li {
-    position: relative;
-    display: inline-block;
-    padding: 0.5em;
-    color: rgb(200,200,200);
-}
+@import "document";
+@import "elements";
