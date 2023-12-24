@@ -12,6 +12,18 @@ This repo is a demonstration of my attempt to learn [Elm](https://elm-lang.org),
 
 ---
 
+## Prerequisites
+
+Before you begin, ensure you have met the following requirements:
+
+* You have a `Linux` machine.
+* You have installed:
+        - node
+        - npm
+        - `deps/elm`
+        - `deps/dart-sass`
+---
+
 ## Elm vs. React/Javascript:
 
 -   No runtime exceptions
