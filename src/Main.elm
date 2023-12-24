@@ -2,10 +2,11 @@ module Main exposing (..)
 
 import Browser
 import Browser.Navigation as Nav
-import Html exposing (p, text)
-import Html.Attributes exposing (href)
+import Html
+import Html.Attributes exposing (href, id)
+import Navigation exposing (navLinks)
 import Page
-import Route exposing (Route)
+import Route exposing (Model)
 import Url
 
 
@@ -27,13 +28,6 @@ main =
 
 
 -- MODEL
-
-
-type alias Model =
-    { key : Nav.Key
-    , url : Url.Url
-    , route : Route
-    }
 
 
 init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
@@ -87,10 +81,9 @@ view : Model -> Browser.Document Msg
 view model =
     { title = "Jasper's Elm App"
     , body =
-        [ text "The current URL is: "
-        , p [] [ text (Url.toString model.url) ]
-        , text "The resolved route is: "
-        , p [] [ text (Route.routeToString model.route) ]
-        , Page.viewer model.route
+        [ Html.pre [ id "app" ]
+            [ Navigation.viewer navLinks
+            , Page.viewer model
+            ]
         ]
     }

@@ -1,53 +1,14 @@
 module Page exposing (..)
 
-import Html exposing (Html, a, div, header, li, main_, nav, text, ul)
+import Html exposing (Html, div, main_, p, section, text)
 import Html.Attributes exposing (class)
-import Route exposing (Route)
+import Route exposing (Model)
+import Url
 
 
-type alias NavLink =
-    { page : Route
-    , label : String
-    }
-
-
-navLinks : List NavLink
-navLinks =
-    [ { page = Route.Home
-      , label = "Home"
-      }
-    , { page = Route.About
-      , label = "About"
-      }
-    ]
-
-
-link : NavLink -> Html msg
-link navLink =
-    li [] [ a [ Route.routeHref navLink.page ] [ text navLink.label ] ]
-
-
-navBar : List NavLink -> Html msg
-navBar linkList =
-    nav [ class "nav__menu" ]
-        [ ul []
-            (List.map
-                link
-                linkList
-            )
-        ]
-
-
-viewHeader : List NavLink -> Html msg
-viewHeader linkList =
-    header []
-        [ navBar linkList
-        ]
-
-
-viewContent : Route -> Html msg
-viewContent route =
-    case route of
+viewContent : Model -> Html msg
+viewContent model =
+    case model.route of
         Route.Root ->
             div [] [ text "I am at /" ]
 
@@ -61,9 +22,14 @@ viewContent route =
             div [] [ text "This page is not found" ]
 
 
-viewer : Route -> Html msg
-viewer route =
-    div []
-        [ viewHeader navLinks
-        , main_ [] [ viewContent route ]
+viewer : Model -> Html msg
+viewer model =
+    main_ [ class "main-content__container" ]
+        [ section [ class "main-content__block" ] [ viewContent model ]
+        , section [ class "main-content__block" ]
+            [ p [] [ text "The current URL is: " ]
+            , p [] [ text (Url.toString model.url) ]
+            , text "The resolved route is: "
+            , p [] [ text (Route.routeToString model.route) ]
+            ]
         ]
