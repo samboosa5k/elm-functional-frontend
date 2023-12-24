@@ -1,23 +1,26 @@
 <!DOCTYPE HTML>
-<html>
+<html lang="">
+
 <head>
     <meta charset="UTF-8">
     <title>Main</title>
-    <style>body {
-        padding: 0;
-        margin: 0;
-    }</style>
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+        }
+    </style>
     <link rel="stylesheet" href="style.css">
     <script src="elm.js"></script>
 </head>
 
 <body>
-
-<pre id="elm"></pre>
-
-<script>
-    const app = Elm.Main.init();
-</script>
-
+    <pre id="elm"></pre>
+    <script>
+        const app = Elm.Main.init({
+            node: document.getElementById('elm')
+        });
+    </script>
 </body>
+
 </html>

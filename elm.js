@@ -5182,7 +5182,7 @@ var $elm$core$Task$perform = F2(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
 var $elm$browser$Browser$application = _Browser_application;
-var $author$project$Main$Model = F3(
+var $author$project$Route$Model = F3(
 	function (key, url, route) {
 		return {key: key, route: route, url: url};
 	});
@@ -5192,7 +5192,7 @@ var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $author$project$Main$init = F3(
 	function (_v0, url, key) {
 		return _Utils_Tuple2(
-			A3($author$project$Main$Model, key, url, $author$project$Route$Root),
+			A3($author$project$Route$Model, key, url, $author$project$Route$Root),
 			$elm$core$Platform$Cmd$none);
 	});
 var $elm$core$Platform$Sub$batch = _Platform_batch;
@@ -6047,7 +6047,31 @@ var $author$project$Main$update = F2(
 				$elm$core$Platform$Cmd$none);
 		}
 	});
-var $elm$html$Html$p = _VirtualDom_node('p');
+var $elm$json$Json$Encode$string = _Json_wrap;
+var $elm$html$Html$Attributes$stringProperty = F2(
+	function (key, string) {
+		return A2(
+			_VirtualDom_property,
+			key,
+			$elm$json$Json$Encode$string(string));
+	});
+var $elm$html$Html$Attributes$id = $elm$html$Html$Attributes$stringProperty('id');
+var $author$project$Navigation$navLinks = _List_fromArray(
+	[
+		{label: 'Home', page: $author$project$Route$Home},
+		{label: 'About', page: $author$project$Route$About}
+	]);
+var $elm$html$Html$pre = _VirtualDom_node('pre');
+var $elm$html$Html$header = _VirtualDom_node('header');
+var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
+var $elm$html$Html$li = _VirtualDom_node('li');
+var $elm$html$Html$a = _VirtualDom_node('a');
+var $elm$html$Html$Attributes$href = function (url) {
+	return A2(
+		$elm$html$Html$Attributes$stringProperty,
+		'href',
+		_VirtualDom_noJavaScriptUri(url));
+};
 var $author$project$Route$routeToPieces = function (route) {
 	switch (route.$) {
 		case 'Root':
@@ -6069,17 +6093,74 @@ var $author$project$Route$routeToString = function (route) {
 		'/',
 		$author$project$Route$routeToPieces(route));
 };
+var $author$project$Route$routeHref = function (route) {
+	return $elm$html$Html$Attributes$href(
+		$author$project$Route$routeToString(route));
+};
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
-var $elm$html$Html$div = _VirtualDom_node('div');
+var $author$project$Navigation$link = function (navLink) {
+	return A2(
+		$elm$html$Html$a,
+		_List_fromArray(
+			[
+				$author$project$Route$routeHref(navLink.page)
+			]),
+		_List_fromArray(
+			[
+				$elm$html$Html$text(navLink.label)
+			]));
+};
+var $elm$html$Html$nav = _VirtualDom_node('nav');
+var $elm$html$Html$ul = _VirtualDom_node('ul');
+var $author$project$Navigation$navigationLinks = function (linkList) {
+	return A2(
+		$elm$html$Html$nav,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('nav-menu__container')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$ul,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('nav-menu__list')
+					]),
+				A2(
+					$elm$core$List$map,
+					function (x) {
+						return A2(
+							$elm$html$Html$li,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('nav-menu__item')
+								]),
+							_List_fromArray(
+								[
+									$author$project$Navigation$link(x)
+								]));
+					},
+					linkList))
+			]));
+};
+var $author$project$Navigation$viewer = function (linkList) {
+	return A2(
+		$elm$html$Html$header,
+		_List_Nil,
+		_List_fromArray(
+			[
+				$author$project$Navigation$navigationLinks(linkList)
+			]));
+};
 var $elm$html$Html$main_ = _VirtualDom_node('main');
-var $author$project$Page$navLinks = _List_fromArray(
-	[
-		{label: 'Home', page: $author$project$Route$Home},
-		{label: 'About', page: $author$project$Route$About}
-	]);
-var $author$project$Page$viewContent = function (route) {
-	switch (route.$) {
+var $elm$html$Html$p = _VirtualDom_node('p');
+var $elm$html$Html$section = _VirtualDom_node('section');
+var $elm$html$Html$div = _VirtualDom_node('div');
+var $author$project$Page$viewContent = function (model) {
+	var _v0 = model.route;
+	switch (_v0.$) {
 		case 'Root':
 			return A2(
 				$elm$html$Html$div,
@@ -6114,85 +6195,57 @@ var $author$project$Page$viewContent = function (route) {
 					]));
 	}
 };
-var $elm$html$Html$header = _VirtualDom_node('header');
-var $elm$json$Json$Encode$string = _Json_wrap;
-var $elm$html$Html$Attributes$stringProperty = F2(
-	function (key, string) {
-		return A2(
-			_VirtualDom_property,
-			key,
-			$elm$json$Json$Encode$string(string));
-	});
-var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
-var $elm$html$Html$a = _VirtualDom_node('a');
-var $elm$html$Html$li = _VirtualDom_node('li');
-var $elm$html$Html$Attributes$href = function (url) {
+var $author$project$Page$viewer = function (model) {
 	return A2(
-		$elm$html$Html$Attributes$stringProperty,
-		'href',
-		_VirtualDom_noJavaScriptUri(url));
-};
-var $author$project$Route$routeHref = function (route) {
-	return $elm$html$Html$Attributes$href(
-		$author$project$Route$routeToString(route));
-};
-var $author$project$Page$link = function (navLink) {
-	return A2(
-		$elm$html$Html$li,
-		_List_Nil,
+		$elm$html$Html$main_,
 		_List_fromArray(
 			[
-				A2(
-				$elm$html$Html$a,
-				_List_fromArray(
-					[
-						$author$project$Route$routeHref(navLink.page)
-					]),
-				_List_fromArray(
-					[
-						$elm$html$Html$text(navLink.label)
-					]))
-			]));
-};
-var $elm$html$Html$nav = _VirtualDom_node('nav');
-var $elm$html$Html$ul = _VirtualDom_node('ul');
-var $author$project$Page$navBar = function (linkList) {
-	return A2(
-		$elm$html$Html$nav,
-		_List_fromArray(
-			[
-				$elm$html$Html$Attributes$class('nav__menu')
+				$elm$html$Html$Attributes$class('main-content__container')
 			]),
 		_List_fromArray(
 			[
 				A2(
-				$elm$html$Html$ul,
-				_List_Nil,
-				A2($elm$core$List$map, $author$project$Page$link, linkList))
-			]));
-};
-var $author$project$Page$viewHeader = function (linkList) {
-	return A2(
-		$elm$html$Html$header,
-		_List_Nil,
-		_List_fromArray(
-			[
-				$author$project$Page$navBar(linkList)
-			]));
-};
-var $author$project$Page$viewer = function (route) {
-	return A2(
-		$elm$html$Html$div,
-		_List_Nil,
-		_List_fromArray(
-			[
-				$author$project$Page$viewHeader($author$project$Page$navLinks),
-				A2(
-				$elm$html$Html$main_,
-				_List_Nil,
+				$elm$html$Html$section,
 				_List_fromArray(
 					[
-						$author$project$Page$viewContent(route)
+						$elm$html$Html$Attributes$class('main-content__block')
+					]),
+				_List_fromArray(
+					[
+						$author$project$Page$viewContent(model)
+					])),
+				A2(
+				$elm$html$Html$section,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('main-content__block')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('The current URL is: ')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text(
+								$elm$url$Url$toString(model.url))
+							])),
+						$elm$html$Html$text('The resolved route is: '),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text(
+								$author$project$Route$routeToString(model.route))
+							]))
 					]))
 			]));
 };
@@ -6200,25 +6253,17 @@ var $author$project$Main$view = function (model) {
 	return {
 		body: _List_fromArray(
 			[
-				$elm$html$Html$text('The current URL is: '),
 				A2(
-				$elm$html$Html$p,
-				_List_Nil,
+				$elm$html$Html$pre,
 				_List_fromArray(
 					[
-						$elm$html$Html$text(
-						$elm$url$Url$toString(model.url))
-					])),
-				$elm$html$Html$text('The resolved route is: '),
-				A2(
-				$elm$html$Html$p,
-				_List_Nil,
+						$elm$html$Html$Attributes$id('app')
+					]),
 				_List_fromArray(
 					[
-						$elm$html$Html$text(
-						$author$project$Route$routeToString(model.route))
-					])),
-				$author$project$Page$viewer(model.route)
+						$author$project$Navigation$viewer($author$project$Navigation$navLinks),
+						$author$project$Page$viewer(model)
+					]))
 			]),
 		title: 'Jasper\'s Elm App'
 	};
