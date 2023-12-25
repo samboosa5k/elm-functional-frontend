@@ -1,5 +1,11 @@
 @use "_colors.scss" as colors;
 
+.header {
+    &__container {
+        grid-column: 1 / auto-fill;
+    }
+}
+
 .nav-menu {
     &__container {
         position: relative;
@@ -12,7 +18,9 @@
         position: relative;
         display: flex;
         flex-direction: row;
+        padding: 0;
         list-style-type: none;
+        grid-column: 1 / auto-fill;
     }
 
     &__item a {
@@ -25,11 +33,8 @@
 
 .main-content {
     &__container {
+        grid-column: 1 / auto-fill;
         position: relative;
-        display: grid;
-        grid-template-rows: minmax(1fr, auto);
-        grid-template-columns: repeat(12, 1fr);
-        background: colors.$light-contrast;
         color: colors.$light;
         padding: 0.5em;
     }

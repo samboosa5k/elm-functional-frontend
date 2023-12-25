@@ -40,4 +40,4 @@ navigationLinks linkList =
 
 viewer : List NavLink -> Html msg
 viewer linkList =
-    header [] [ navigationLinks linkList ]
+    header [ class "header__container" ] [ navigationLinks linkList ]

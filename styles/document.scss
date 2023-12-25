@@ -7,3 +7,11 @@ body {
     background-color: colors.$light-contrast;
     font-size: 16px;
 }
+
+#app {
+    position: relative;
+    display: grid;
+    grid-template-rows: repeat(12, minmax(min-content, max-content)) repeat(12, 1fr);
+    grid-template-columns: repeat(12, minmax(min-content, max-content)) repeat(12, 1fr);
+    background: colors.$light-contrast;
+}

@@ -6062,8 +6062,8 @@ var $author$project$Navigation$navLinks = _List_fromArray(
 		{label: 'About', page: $author$project$Route$About}
 	]);
 var $elm$html$Html$pre = _VirtualDom_node('pre');
-var $elm$html$Html$header = _VirtualDom_node('header');
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
+var $elm$html$Html$header = _VirtualDom_node('header');
 var $elm$html$Html$li = _VirtualDom_node('li');
 var $elm$html$Html$a = _VirtualDom_node('a');
 var $elm$html$Html$Attributes$href = function (url) {
@@ -6148,7 +6148,10 @@ var $author$project$Navigation$navigationLinks = function (linkList) {
 var $author$project$Navigation$viewer = function (linkList) {
 	return A2(
 		$elm$html$Html$header,
-		_List_Nil,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('header__container')
+			]),
 		_List_fromArray(
 			[
 				$author$project$Navigation$navigationLinks(linkList)
