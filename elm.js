@@ -6145,6 +6145,29 @@ var $author$project$Navigation$navigationLinks = function (linkList) {
 					linkList))
 			]));
 };
+var $elm$html$Html$div = _VirtualDom_node('div');
+var $elm$html$Html$h1 = _VirtualDom_node('h1');
+var $author$project$Navigation$titleBar = function (title) {
+	return A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('title-bar__container')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$h1,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('title-bar__heading')
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text(title)
+					]))
+			]));
+};
 var $author$project$Navigation$viewer = function (linkList) {
 	return A2(
 		$elm$html$Html$header,
@@ -6154,13 +6177,13 @@ var $author$project$Navigation$viewer = function (linkList) {
 			]),
 		_List_fromArray(
 			[
+				$author$project$Navigation$titleBar('JVTerm'),
 				$author$project$Navigation$navigationLinks(linkList)
 			]));
 };
 var $elm$html$Html$main_ = _VirtualDom_node('main');
 var $elm$html$Html$p = _VirtualDom_node('p');
 var $elm$html$Html$section = _VirtualDom_node('section');
-var $elm$html$Html$div = _VirtualDom_node('div');
 var $author$project$Page$viewContent = function (model) {
 	var _v0 = model.route;
 	switch (_v0.$) {
