@@ -5,6 +5,12 @@ build _delightful_ web-apps in this purely functional language.
 
 ---
 
+## Screenshot
+
+![Screenshot](./assets/screenshot.png)
+
+---
+
 ## Table of Contents:
 
 - [Elm vs. React/Javascript](#elm-vs-reactjavascript)
