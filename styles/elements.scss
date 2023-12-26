@@ -1,4 +1,5 @@
 @use "_colors.scss" as colors;
+@use "_extends.scss" as extends;
 
 .header {
     &__container {
@@ -13,15 +14,16 @@
         position: relative;
         display: block;
         padding: 0.5em;
-        background: colors.$primary-color-rgb;
+        background: linear-gradient(to right, colors.$medium-color-rgb, colors.$dark-color-rgb);
+
+
+        @extend %border-bottom-after;
     }
 
     &__heading {
         position: relative;
         display: block;
-        padding: 0;
-        margin: 0;
-        color: colors.$light-color-contrast-rgb;
+        color: colors.$light-color-rgb;
     }
 }
 
@@ -29,7 +31,9 @@
     &__container {
         position: relative;
         display: block;
-        background: colors.$dark-color-rgb;
+        background: colors.$darker-color-rgb;
+
+        @extend %border-bottom-after;
     }
 
     &__list {
@@ -46,14 +50,14 @@
     &__item {
         position: relative;
         display: inline-block;
-        background: colors.$dark-color-rgb;
+        background: colors.$darker-color-rgb;
     }
 
     &__item a {
         position: relative;
         display: inline-block;
         padding: 0.5em;
-        color: colors.$dark-color-rgb;
+        color: colors.$darker-color-rgb;
         background: colors.$light-color-rgb;
         text-decoration: none;
     }
@@ -61,23 +65,23 @@
 
 .main-content {
     &__container {
-        grid-column: 1 / auto-fill;
         position: relative;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
         color: colors.$light-color-rgb;
+        background: colors.$darker-color-rgb;
     }
 
     &__title {
         position: relative;
         display: block;
         padding: 0.5em;
-        font-size: 1.5em;
-        font-weight: bold;
     }
 
     &__block {
         position: relative;
         display: block;
         padding: 0.5em;
-        background: colors.$dark-color-rgb;
     }
 }
