@@ -1,9 +1,13 @@
 module Page exposing (..)
 
-import Html exposing (Html, div, main_, p, section, text)
+import Html exposing (Html, div, h1, main_, p, param, section, span, text)
 import Html.Attributes exposing (class)
 import Route exposing (Model)
 import Url
+
+
+
+-- ELEMENT
 
 
 viewContent : Model -> Html msg

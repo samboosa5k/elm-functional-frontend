@@ -1,6 +1,6 @@
 module Navigation exposing (navLinks, viewer)
 
-import Html exposing (Html, a, header, li, nav, text, ul)
+import Html exposing (Html, a, div, h1, header, li, nav, text, ul)
 import Html.Attributes exposing (class)
 import Route exposing (Route)
 
@@ -38,6 +38,16 @@ navigationLinks linkList =
         ]
 
 
+titleBar : String -> Html msg
+titleBar title =
+    div [ class "title-bar__container" ]
+        [ h1 [ class "title-bar__heading" ] [ text title ]
+        ]
+
+
 viewer : List NavLink -> Html msg
 viewer linkList =
-    header [ class "header__container" ] [ navigationLinks linkList ]
+    header [ class "header__container" ]
+        [ titleBar "JVTerm"
+        , navigationLinks linkList
+        ]
