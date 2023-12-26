@@ -9,41 +9,63 @@ body {
 #app {
   position: relative;
   display: grid;
-  grid-template-rows: repeat(12, minmax(min-content, max-content)) repeat(12, 1fr);
   grid-template-columns: repeat(12, minmax(min-content, max-content)) repeat(12, 1fr);
   background: rgb(45, 41, 32);
 }
 
 .header__container {
+  display: flex;
+  flex-direction: column;
   grid-column: 1/auto-fill;
+}
+
+.title-bar__container {
+  position: relative;
+  display: block;
+  padding: 0.5em;
+  background: rgb(133, 31, 28);
+}
+.title-bar__heading {
+  position: relative;
+  display: block;
+  padding: 0;
+  margin: 0;
+  color: rgb(45, 41, 32);
 }
 
 .nav-menu__container {
   position: relative;
   display: block;
-  background: rgb(45, 41, 32);
-  padding: 0.5em;
+  background: rgb(24, 22, 18);
 }
 .nav-menu__list {
   position: relative;
   display: flex;
+  flex: 1;
   flex-direction: row;
   padding: 0;
+  margin: 0;
   list-style-type: none;
-  grid-column: 1/auto-fill;
+  text-transform: uppercase;
+}
+.nav-menu__item {
+  position: relative;
+  display: inline-block;
+  background: rgb(24, 22, 18);
 }
 .nav-menu__item a {
   position: relative;
   display: inline-block;
   padding: 0.5em;
-  color: rgb(178, 169, 151);
+  color: rgb(24, 22, 18);
+  background: rgb(178, 169, 151);
+  text-decoration: none;
 }
 
 .main-content__container {
   grid-column: 1/auto-fill;
   position: relative;
   color: rgb(178, 169, 151);
-  padding: 0.5em;
 }
 .main-content__title {
   position: relative;

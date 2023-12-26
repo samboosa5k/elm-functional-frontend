@@ -2,7 +2,26 @@
 
 .header {
     &__container {
+        display: flex;
+        flex-direction: column;
         grid-column: 1 / auto-fill;
+    }
+}
+
+.title-bar {
+    &__container {
+        position: relative;
+        display: block;
+        padding: 0.5em;
+        background: colors.$primary-color-rgb;
+    }
+
+    &__heading {
+        position: relative;
+        display: block;
+        padding: 0;
+        margin: 0;
+        color: colors.$light-color-contrast-rgb;
     }
 }
 
@@ -10,24 +29,33 @@
     &__container {
         position: relative;
         display: block;
-        background: colors.$light-contrast;
-        padding: 0.5em;
+        background: colors.$dark-color-rgb;
     }
 
     &__list {
         position: relative;
         display: flex;
+        flex: 1;
         flex-direction: row;
         padding: 0;
+        margin: 0;
         list-style-type: none;
-        grid-column: 1 / auto-fill;
+        text-transform: uppercase;
+    }
+
+    &__item {
+        position: relative;
+        display: inline-block;
+        background: colors.$dark-color-rgb;
     }
 
     &__item a {
         position: relative;
         display: inline-block;
         padding: 0.5em;
-        color: colors.$light;
+        color: colors.$dark-color-rgb;
+        background: colors.$light-color-rgb;
+        text-decoration: none;
     }
 }
 
@@ -35,8 +63,7 @@
     &__container {
         grid-column: 1 / auto-fill;
         position: relative;
-        color: colors.$light;
-        padding: 0.5em;
+        color: colors.$light-color-rgb;
     }
 
     &__title {
@@ -51,6 +78,6 @@
         position: relative;
         display: block;
         padding: 0.5em;
-        background: colors.$dark;
+        background: colors.$dark-color-rgb;
     }
 }
