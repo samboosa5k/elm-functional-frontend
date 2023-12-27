@@ -1,12 +1,14 @@
 module Main exposing (..)
 
+import Array exposing (fromList, push, toList)
 import Browser
 import Browser.Navigation as Nav
 import Html
 import Html.Attributes exposing (href, id)
+import Model exposing (Model, Msg(..))
 import Navigation exposing (navLinks)
 import Page
-import Route exposing (Model)
+import Route
 import Url
 
 
@@ -32,16 +34,11 @@ main =
 
 init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init _ url key =
-    ( Model key url Route.Root, Cmd.none )
+    ( Model key url Route.Root "" [ "Initial command..." ], Cmd.none )
 
 
 
 -- UPDATE
-
-
-type Msg
-    = LinkClicked Browser.UrlRequest
-    | UrlChanged Url.Url
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -62,6 +59,19 @@ update msg model =
               }
             , Cmd.none
             )
+
+        Change newContent ->
+            ( { model | command = newContent }, Cmd.none )
+
+        KeyDown key ->
+            if key == 13 then
+                ( { model | command = "", input = toList (push model.command (fromList model.input)) }, Cmd.none )
+
+            else
+                ( model, Cmd.none )
+
+        SubmitCommand ->
+            ( { model | command = "", input = toList (push model.command (fromList model.input)) }, Cmd.none )
 
 
 

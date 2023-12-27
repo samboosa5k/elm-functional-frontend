@@ -1,8 +1,11 @@
 module Page exposing (..)
 
-import Html exposing (Html, div, h1, main_, p, param, section, span, text)
-import Html.Attributes exposing (class)
-import Route exposing (Model)
+import Html exposing (Attribute, Html, div, input, main_, p, section, text)
+import Html.Attributes exposing (class, id, placeholder, value)
+import Html.Events exposing (keyCode, on, onInput)
+import Json.Decode as Json
+import Model exposing (Model, Msg(..))
+import Route
 import Url
 
 
@@ -26,7 +29,30 @@ viewContent model =
             div [] [ text "This page is not found" ]
 
 
-viewer : Model -> Html msg
+terminalOutput : Model -> Html msg
+terminalOutput { input } =
+    div []
+        (List.map
+            (\x -> p [] [ text x ])
+            input
+        )
+
+
+onKeyDown : (Int -> msg) -> Attribute msg
+onKeyDown tagger =
+    on "keydown" (Json.map tagger keyCode)
+
+
+
+-- REFERENCE: https://stackoverflow.com/questions/40113213/how-to-handle-enter-key-press-in-input-field
+
+
+terminalInput : Model -> Html Msg
+terminalInput model =
+    input [ id "terminal__input", placeholder "Input command...", value model.command, onInput Change, onKeyDown KeyDown ] []
+
+
+viewer : Model -> Html Msg
 viewer model =
     main_ [ class "main-content__container" ]
         [ section [ class "main-content__block" ] [ viewContent model ]
@@ -36,4 +62,6 @@ viewer model =
             , text "The resolved route is: "
             , p [] [ text (Route.routeToString model.route) ]
             ]
+        , section [ class "main-content__block" ] [ terminalInput model ]
+        , section [ class "main-content__block" ] [ terminalOutput model ]
         ]

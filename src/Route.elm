@@ -1,4 +1,4 @@
-module Route exposing (Model, Route(..), fromUrl, replaceUrl, routeHref, routeParser, routeToString)
+module Route exposing (Route(..), fromUrl, replaceUrl, routeHref, routeParser, routeToString)
 
 import Browser.Navigation as Nav
 import Html exposing (Attribute)
@@ -12,13 +12,6 @@ import Url.Parser as Parser exposing ((</>), Parser, oneOf, s)
 --
 --
 -- ROUTING
-
-
-type alias Model =
-    { key : Nav.Key
-    , url : Url.Url
-    , route : Route
-    }
 
 
 type Route
