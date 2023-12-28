@@ -5219,9 +5219,9 @@ var $elm$core$Task$perform = F2(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
 var $elm$browser$Browser$application = _Browser_application;
-var $author$project$Model$Model = F5(
-	function (key, url, route, command, input) {
-		return {command: command, input: input, key: key, route: route, url: url};
+var $author$project$Model$Model = F6(
+	function (key, url, route, typingActive, command, input) {
+		return {command: command, input: input, key: key, route: route, typingActive: typingActive, url: url};
 	});
 var $author$project$Route$Root = {$: 'Root'};
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
@@ -5229,11 +5229,12 @@ var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $author$project$Main$init = F3(
 	function (_v0, url, key) {
 		return _Utils_Tuple2(
-			A5(
+			A6(
 				$author$project$Model$Model,
 				key,
 				url,
 				$author$project$Route$Root,
+				false,
 				'',
 				_List_fromArray(
 					['Initial command...'])),
@@ -5243,41 +5244,6 @@ var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
 var $author$project$Main$subscriptions = function (_v0) {
 	return $elm$core$Platform$Sub$none;
-};
-var $elm$core$Array$fromListHelp = F3(
-	function (list, nodeList, nodeListSize) {
-		fromListHelp:
-		while (true) {
-			var _v0 = A2($elm$core$Elm$JsArray$initializeFromList, $elm$core$Array$branchFactor, list);
-			var jsArray = _v0.a;
-			var remainingItems = _v0.b;
-			if (_Utils_cmp(
-				$elm$core$Elm$JsArray$length(jsArray),
-				$elm$core$Array$branchFactor) < 0) {
-				return A2(
-					$elm$core$Array$builderToArray,
-					true,
-					{nodeList: nodeList, nodeListSize: nodeListSize, tail: jsArray});
-			} else {
-				var $temp$list = remainingItems,
-					$temp$nodeList = A2(
-					$elm$core$List$cons,
-					$elm$core$Array$Leaf(jsArray),
-					nodeList),
-					$temp$nodeListSize = nodeListSize + 1;
-				list = $temp$list;
-				nodeList = $temp$nodeList;
-				nodeListSize = $temp$nodeListSize;
-				continue fromListHelp;
-			}
-		}
-	});
-var $elm$core$Array$fromList = function (list) {
-	if (!list.b) {
-		return $elm$core$Array$empty;
-	} else {
-		return A3($elm$core$Array$fromListHelp, list, _List_Nil, 0);
-	}
 };
 var $elm$url$Url$Parser$State = F5(
 	function (visited, unvisited, params, frag, value) {
@@ -6048,6 +6014,122 @@ var $author$project$Route$fromUrl = function (url) {
 			}));
 };
 var $elm$browser$Browser$Navigation$load = _Browser_load;
+var $elm$browser$Browser$Navigation$pushUrl = _Browser_pushUrl;
+var $elm$url$Url$addPort = F2(
+	function (maybePort, starter) {
+		if (maybePort.$ === 'Nothing') {
+			return starter;
+		} else {
+			var port_ = maybePort.a;
+			return starter + (':' + $elm$core$String$fromInt(port_));
+		}
+	});
+var $elm$url$Url$addPrefixed = F3(
+	function (prefix, maybeSegment, starter) {
+		if (maybeSegment.$ === 'Nothing') {
+			return starter;
+		} else {
+			var segment = maybeSegment.a;
+			return _Utils_ap(
+				starter,
+				_Utils_ap(prefix, segment));
+		}
+	});
+var $elm$url$Url$toString = function (url) {
+	var http = function () {
+		var _v0 = url.protocol;
+		if (_v0.$ === 'Http') {
+			return 'http://';
+		} else {
+			return 'https://';
+		}
+	}();
+	return A3(
+		$elm$url$Url$addPrefixed,
+		'#',
+		url.fragment,
+		A3(
+			$elm$url$Url$addPrefixed,
+			'?',
+			url.query,
+			_Utils_ap(
+				A2(
+					$elm$url$Url$addPort,
+					url.port_,
+					_Utils_ap(http, url.host)),
+				url.path)));
+};
+var $author$project$Main$update = F2(
+	function (msg, model) {
+		switch (msg.$) {
+			case 'LinkClicked':
+				var urlRequest = msg.a;
+				if (urlRequest.$ === 'Internal') {
+					var url = urlRequest.a;
+					return _Utils_Tuple2(
+						model,
+						A2(
+							$elm$browser$Browser$Navigation$pushUrl,
+							model.key,
+							$elm$url$Url$toString(url)));
+				} else {
+					var href = urlRequest.a;
+					return _Utils_Tuple2(
+						model,
+						$elm$browser$Browser$Navigation$load(href));
+				}
+			case 'UrlChanged':
+				var url = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							route: A2(
+								$elm$core$Maybe$withDefault,
+								model.route,
+								$author$project$Route$fromUrl(url)),
+							url: url
+						}),
+					$elm$core$Platform$Cmd$none);
+			default:
+				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+		}
+	});
+var $elm$core$Array$fromListHelp = F3(
+	function (list, nodeList, nodeListSize) {
+		fromListHelp:
+		while (true) {
+			var _v0 = A2($elm$core$Elm$JsArray$initializeFromList, $elm$core$Array$branchFactor, list);
+			var jsArray = _v0.a;
+			var remainingItems = _v0.b;
+			if (_Utils_cmp(
+				$elm$core$Elm$JsArray$length(jsArray),
+				$elm$core$Array$branchFactor) < 0) {
+				return A2(
+					$elm$core$Array$builderToArray,
+					true,
+					{nodeList: nodeList, nodeListSize: nodeListSize, tail: jsArray});
+			} else {
+				var $temp$list = remainingItems,
+					$temp$nodeList = A2(
+					$elm$core$List$cons,
+					$elm$core$Array$Leaf(jsArray),
+					nodeList),
+					$temp$nodeListSize = nodeListSize + 1;
+				list = $temp$list;
+				nodeList = $temp$nodeList;
+				nodeListSize = $temp$nodeListSize;
+				continue fromListHelp;
+			}
+		}
+	});
+var $elm$core$Array$fromList = function (list) {
+	if (!list.b) {
+		return $elm$core$Array$empty;
+	} else {
+		return A3($elm$core$Array$fromListHelp, list, _List_Nil, 0);
+	}
+};
 var $elm$core$Elm$JsArray$push = _JsArray_push;
 var $elm$core$Bitwise$and = _Bitwise_and;
 var $elm$core$Bitwise$shiftRightZfBy = _Bitwise_shiftRightZfBy;
@@ -6133,93 +6215,19 @@ var $elm$core$Array$push = F2(
 			A2($elm$core$Elm$JsArray$push, a, tail),
 			array);
 	});
-var $elm$browser$Browser$Navigation$pushUrl = _Browser_pushUrl;
-var $elm$url$Url$addPort = F2(
-	function (maybePort, starter) {
-		if (maybePort.$ === 'Nothing') {
-			return starter;
-		} else {
-			var port_ = maybePort.a;
-			return starter + (':' + $elm$core$String$fromInt(port_));
-		}
-	});
-var $elm$url$Url$addPrefixed = F3(
-	function (prefix, maybeSegment, starter) {
-		if (maybeSegment.$ === 'Nothing') {
-			return starter;
-		} else {
-			var segment = maybeSegment.a;
-			return _Utils_ap(
-				starter,
-				_Utils_ap(prefix, segment));
-		}
-	});
-var $elm$url$Url$toString = function (url) {
-	var http = function () {
-		var _v0 = url.protocol;
-		if (_v0.$ === 'Http') {
-			return 'http://';
-		} else {
-			return 'https://';
-		}
-	}();
-	return A3(
-		$elm$url$Url$addPrefixed,
-		'#',
-		url.fragment,
-		A3(
-			$elm$url$Url$addPrefixed,
-			'?',
-			url.query,
-			_Utils_ap(
-				A2(
-					$elm$url$Url$addPort,
-					url.port_,
-					_Utils_ap(http, url.host)),
-				url.path)));
-};
-var $author$project$Main$update = F2(
+var $author$project$Main$updateTerminal = F2(
 	function (msg, model) {
 		switch (msg.$) {
-			case 'LinkClicked':
-				var urlRequest = msg.a;
-				if (urlRequest.$ === 'Internal') {
-					var url = urlRequest.a;
-					return _Utils_Tuple2(
-						model,
-						A2(
-							$elm$browser$Browser$Navigation$pushUrl,
-							model.key,
-							$elm$url$Url$toString(url)));
-				} else {
-					var href = urlRequest.a;
-					return _Utils_Tuple2(
-						model,
-						$elm$browser$Browser$Navigation$load(href));
-				}
-			case 'UrlChanged':
-				var url = msg.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							route: A2(
-								$elm$core$Maybe$withDefault,
-								model.route,
-								$author$project$Route$fromUrl(url)),
-							url: url
-						}),
-					$elm$core$Platform$Cmd$none);
 			case 'Change':
-				var newContent = msg.a;
+				var newText = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{command: newContent}),
+						{command: newText}),
 					$elm$core$Platform$Cmd$none);
 			case 'KeyDown':
-				var key = msg.a;
-				return (key === 13) ? _Utils_Tuple2(
+				var keyCode = msg.a;
+				return (keyCode === 13) ? _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{
@@ -6232,18 +6240,23 @@ var $author$project$Main$update = F2(
 						}),
 					$elm$core$Platform$Cmd$none) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 			default:
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							command: '',
-							input: $elm$core$Array$toList(
-								A2(
-									$elm$core$Array$push,
-									model.command,
-									$elm$core$Array$fromList(model.input)))
-						}),
-					$elm$core$Platform$Cmd$none);
+				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+		}
+	});
+var $author$project$Main$switchUpdater = F2(
+	function (msg, model) {
+		if (msg.$ === 'ToggleTyping') {
+			return model.typingActive ? _Utils_Tuple2(
+				_Utils_update(
+					model,
+					{typingActive: false}),
+				$elm$core$Platform$Cmd$none) : _Utils_Tuple2(
+				_Utils_update(
+					model,
+					{typingActive: true}),
+				$elm$core$Platform$Cmd$none);
+		} else {
+			return model.typingActive ? A2($author$project$Main$updateTerminal, msg, model) : A2($author$project$Main$update, msg, model);
 		}
 	});
 var $elm$json$Json$Encode$string = _Json_wrap;
@@ -6389,14 +6402,31 @@ var $author$project$Model$Change = function (a) {
 var $author$project$Model$KeyDown = function (a) {
 	return {$: 'KeyDown', a: a};
 };
+var $author$project$Model$ToggleTyping = {$: 'ToggleTyping'};
 var $elm$html$Html$input = _VirtualDom_node('input');
+var $elm$virtual_dom$VirtualDom$Normal = function (a) {
+	return {$: 'Normal', a: a};
+};
+var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
+var $elm$html$Html$Events$on = F2(
+	function (event, decoder) {
+		return A2(
+			$elm$virtual_dom$VirtualDom$on,
+			event,
+			$elm$virtual_dom$VirtualDom$Normal(decoder));
+	});
+var $elm$html$Html$Events$onClick = function (msg) {
+	return A2(
+		$elm$html$Html$Events$on,
+		'click',
+		$elm$json$Json$Decode$succeed(msg));
+};
 var $elm$html$Html$Events$alwaysStop = function (x) {
 	return _Utils_Tuple2(x, true);
 };
 var $elm$virtual_dom$VirtualDom$MayStopPropagation = function (a) {
 	return {$: 'MayStopPropagation', a: a};
 };
-var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
 var $elm$html$Html$Events$stopPropagationOn = F2(
 	function (event, decoder) {
 		return A2(
@@ -6426,16 +6456,6 @@ var $elm$html$Html$Events$onInput = function (tagger) {
 };
 var $elm$json$Json$Decode$int = _Json_decodeInt;
 var $elm$html$Html$Events$keyCode = A2($elm$json$Json$Decode$field, 'keyCode', $elm$json$Json$Decode$int);
-var $elm$virtual_dom$VirtualDom$Normal = function (a) {
-	return {$: 'Normal', a: a};
-};
-var $elm$html$Html$Events$on = F2(
-	function (event, decoder) {
-		return A2(
-			$elm$virtual_dom$VirtualDom$on,
-			event,
-			$elm$virtual_dom$VirtualDom$Normal(decoder));
-	});
 var $author$project$Page$onKeyDown = function (tagger) {
 	return A2(
 		$elm$html$Html$Events$on,
@@ -6452,6 +6472,7 @@ var $author$project$Page$terminalInput = function (model) {
 				$elm$html$Html$Attributes$id('terminal__input'),
 				$elm$html$Html$Attributes$placeholder('Input command...'),
 				$elm$html$Html$Attributes$value(model.command),
+				$elm$html$Html$Events$onClick($author$project$Model$ToggleTyping),
 				$elm$html$Html$Events$onInput($author$project$Model$Change),
 				$author$project$Page$onKeyDown($author$project$Model$KeyDown)
 			]),
@@ -6606,6 +6627,6 @@ var $author$project$Main$view = function (model) {
 	};
 };
 var $author$project$Main$main = $elm$browser$Browser$application(
-	{init: $author$project$Main$init, onUrlChange: $author$project$Model$UrlChanged, onUrlRequest: $author$project$Model$LinkClicked, subscriptions: $author$project$Main$subscriptions, update: $author$project$Main$update, view: $author$project$Main$view});
+	{init: $author$project$Main$init, onUrlChange: $author$project$Model$UrlChanged, onUrlRequest: $author$project$Model$LinkClicked, subscriptions: $author$project$Main$subscriptions, update: $author$project$Main$switchUpdater, view: $author$project$Main$view});
 _Platform_export({'Main':{'init':$author$project$Main$main(
 	$elm$json$Json$Decode$succeed(_Utils_Tuple0))(0)}});}(this));

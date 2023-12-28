@@ -8,6 +8,7 @@ import Html.Attributes exposing (href, id)
 import Model exposing (Model, Msg(..))
 import Navigation exposing (navLinks)
 import Page
+import Platform.Cmd as Cmd
 import Route
 import Url
 
@@ -21,7 +22,7 @@ main =
     Browser.application
         { init = init
         , view = view
-        , update = update
+        , update = switchUpdater
         , subscriptions = subscriptions
         , onUrlChange = UrlChanged
         , onUrlRequest = LinkClicked
@@ -34,11 +35,46 @@ main =
 
 init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init _ url key =
-    ( Model key url Route.Root "" [ "Initial command..." ], Cmd.none )
+    ( Model key url Route.Root False "" [ "Initial command..." ], Cmd.none )
 
 
 
 -- UPDATE
+
+
+switchUpdater : Msg -> Model -> ( Model, Cmd Msg )
+switchUpdater msg model =
+    case msg of
+        ToggleTyping ->
+            if model.typingActive == True then
+                ( { model | typingActive = False }, Cmd.none )
+
+            else
+                ( { model | typingActive = True }, Cmd.none )
+
+        _ ->
+            if model.typingActive == True then
+                updateTerminal msg model
+
+            else
+                update msg model
+
+
+updateTerminal : Msg -> Model -> ( Model, Cmd Msg )
+updateTerminal msg model =
+    case msg of
+        Change newText ->
+            ( { model | command = newText }, Cmd.none )
+
+        KeyDown keyCode ->
+            if keyCode == 13 then
+                ( { model | command = "", input = toList (push model.command (fromList model.input)) }, Cmd.none )
+
+            else
+                ( model, Cmd.none )
+
+        _ ->
+            ( model, Cmd.none )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -60,18 +96,8 @@ update msg model =
             , Cmd.none
             )
 
-        Change newContent ->
-            ( { model | command = newContent }, Cmd.none )
-
-        KeyDown key ->
-            if key == 13 then
-                ( { model | command = "", input = toList (push model.command (fromList model.input)) }, Cmd.none )
-
-            else
-                ( model, Cmd.none )
-
-        SubmitCommand ->
-            ( { model | command = "", input = toList (push model.command (fromList model.input)) }, Cmd.none )
+        _ ->
+            ( model, Cmd.none )
 
 
 

@@ -2,7 +2,7 @@ module Page exposing (..)
 
 import Html exposing (Attribute, Html, div, input, main_, p, section, text)
 import Html.Attributes exposing (class, id, placeholder, value)
-import Html.Events exposing (keyCode, on, onInput)
+import Html.Events exposing (keyCode, on, onClick, onInput)
 import Json.Decode as Json
 import Model exposing (Model, Msg(..))
 import Route
@@ -38,6 +38,10 @@ terminalOutput { input } =
         )
 
 
+
+-- onInput : (String -> msg) -> Attribute msg
+
+
 onKeyDown : (Int -> msg) -> Attribute msg
 onKeyDown tagger =
     on "keydown" (Json.map tagger keyCode)
@@ -49,7 +53,15 @@ onKeyDown tagger =
 
 terminalInput : Model -> Html Msg
 terminalInput model =
-    input [ id "terminal__input", placeholder "Input command...", value model.command, onInput Change, onKeyDown KeyDown ] []
+    input
+        [ id "terminal__input"
+        , placeholder "Input command..."
+        , value model.command
+        , onClick ToggleTyping
+        , onInput Change
+        , onKeyDown KeyDown
+        ]
+        []
 
 
 viewer : Model -> Html Msg
