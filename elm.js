@@ -5392,6 +5392,7 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 			$elm$json$Json$Encode$string(string));
 	});
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
+var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$html$Html$header = _VirtualDom_node('header');
 var $elm$html$Html$Attributes$id = $elm$html$Html$Attributes$stringProperty('id');
 var $elm$html$Html$input = _VirtualDom_node('input');
@@ -5448,36 +5449,49 @@ var $author$project$Terminal$onKeyDown = function (tagger) {
 		A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$keyCode));
 };
 var $elm$html$Html$Attributes$placeholder = $elm$html$Html$Attributes$stringProperty('placeholder');
+var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
+var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
 var $author$project$Terminal$inputView = F3(
 	function (_v0, handleUserInput, handleKeyDown) {
 		var userInput = _v0.userInput;
 		return A2(
-			$elm$html$Html$input,
+			$elm$html$Html$div,
 			_List_fromArray(
 				[
-					$elm$html$Html$Attributes$id('terminal__input'),
-					$elm$html$Html$Attributes$placeholder('please enter a command'),
-					$elm$html$Html$Attributes$value(userInput),
-					$elm$html$Html$Events$onInput(handleUserInput),
-					$author$project$Terminal$onKeyDown(handleKeyDown)
+					$elm$html$Html$Attributes$class('terminal-input')
 				]),
-			_List_Nil);
+			_List_fromArray(
+				[
+					$elm$html$Html$text('jvterm > '),
+					A2(
+					$elm$html$Html$input,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('terminal-input__field'),
+							$elm$html$Html$Attributes$placeholder('please enter a command'),
+							$elm$html$Html$Attributes$value(userInput),
+							$elm$html$Html$Events$onInput(handleUserInput),
+							$author$project$Terminal$onKeyDown(handleKeyDown)
+						]),
+					_List_Nil)
+				]));
 	});
 var $elm$html$Html$main_ = _VirtualDom_node('main');
-var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$html$Html$p = _VirtualDom_node('p');
-var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
-var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $author$project$Terminal$outputView = function (model) {
 	return A2(
 		$elm$core$List$map,
 		function (x) {
 			return A2(
 				$elm$html$Html$div,
-				_List_Nil,
 				_List_fromArray(
 					[
+						$elm$html$Html$Attributes$class('main-content__block')
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('jvterm >'),
 						A2(
 						$elm$html$Html$p,
 						_List_Nil,
@@ -5497,7 +5511,6 @@ var $author$project$Terminal$outputView = function (model) {
 		model);
 };
 var $elm$html$Html$pre = _VirtualDom_node('pre');
-var $elm$html$Html$section = _VirtualDom_node('section');
 var $elm$html$Html$h1 = _VirtualDom_node('h1');
 var $author$project$Terminal$titleView = function (titleText) {
 	return A2(
@@ -5553,24 +5566,11 @@ var $author$project$Main$view = function (_v0) {
 						_List_fromArray(
 							[
 								A2(
-								$elm$html$Html$section,
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class('main-content__block')
-									]),
-								_List_fromArray(
-									[
-										$elm$html$Html$text('Content block 1')
-									])),
-								A2(
-								$elm$html$Html$section,
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class('main-content__block')
-									]),
+								$elm$html$Html$div,
+								_List_Nil,
 								$author$project$Terminal$outputView(terminalOutput)),
 								A2(
-								$elm$html$Html$section,
+								$elm$html$Html$div,
 								_List_fromArray(
 									[
 										$elm$html$Html$Attributes$class('main-content__block')
