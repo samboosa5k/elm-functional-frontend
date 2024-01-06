@@ -15,7 +15,7 @@ type alias OutputLine =
 outputView : List OutputLine -> List (Html msg)
 outputView model =
     List.map
-        (\x -> div [] [ p [] [ text x.inputCommand ], p [] [ text x.outputResponse ] ])
+        (\x -> div [ class "main-content__block" ] [ text "jvterm >", p [] [ text x.inputCommand ], p [] [ text x.outputResponse ] ])
         model
 
 
@@ -26,14 +26,17 @@ onKeyDown tagger =
 
 inputView : { a | userInput : String } -> (String -> msg) -> (Int -> msg) -> Html msg
 inputView { userInput } handleUserInput handleKeyDown =
-    input
-        [ id "terminal__input"
-        , placeholder "please enter a command"
-        , value userInput
-        , onInput handleUserInput
-        , onKeyDown handleKeyDown
+    div [ class "terminal-input" ]
+        [ text "jvterm > "
+        , input
+            [ class "terminal-input__field"
+            , placeholder "please enter a command"
+            , value userInput
+            , onInput handleUserInput
+            , onKeyDown handleKeyDown
+            ]
+            []
         ]
-        []
 
 
 titleView : String -> Html msg

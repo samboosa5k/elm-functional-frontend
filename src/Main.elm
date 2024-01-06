@@ -65,11 +65,13 @@ view { userInput, terminalOutput } =
                 [ Terminal.titleView "/user/jasper/home"
                 ]
             , main_ [ class "main-content__container" ]
-                [ section [ class "main-content__block" ]
+                [ div
+                    []
                     (Terminal.outputView
                         terminalOutput
                     )
-                , section [ class "main-content__block" ]
+                , div
+                    [ class "main-content__block" ]
                     [ Terminal.inputView
                         { userInput = userInput }
                         HandleUserInput
