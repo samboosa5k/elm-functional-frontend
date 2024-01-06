@@ -4370,6 +4370,43 @@ function _Browser_load(url)
 		}
 	}));
 }
+
+
+
+var _Bitwise_and = F2(function(a, b)
+{
+	return a & b;
+});
+
+var _Bitwise_or = F2(function(a, b)
+{
+	return a | b;
+});
+
+var _Bitwise_xor = F2(function(a, b)
+{
+	return a ^ b;
+});
+
+function _Bitwise_complement(a)
+{
+	return ~a;
+};
+
+var _Bitwise_shiftLeftBy = F2(function(offset, a)
+{
+	return a << offset;
+});
+
+var _Bitwise_shiftRightBy = F2(function(offset, a)
+{
+	return a >> offset;
+});
+
+var _Bitwise_shiftRightZfBy = F2(function(offset, a)
+{
+	return a >>> offset;
+});
 var $elm$core$Basics$EQ = {$: 'EQ'};
 var $elm$core$Basics$LT = {$: 'LT'};
 var $elm$core$List$cons = _List_cons;
@@ -5173,22 +5210,171 @@ var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
 var $author$project$Main$subscriptions = function (_v0) {
 	return $elm$core$Platform$Sub$none;
 };
-var $author$project$Main$update = F2(
-	function (msg, model) {
-		switch (msg.$) {
-			case 'NoOp':
-				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-			case 'HandleUserInput':
-				var s = msg.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{userInput: s}),
-					$elm$core$Platform$Cmd$none);
-			default:
-				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+var $author$project$Main$HandleEnter = {$: 'HandleEnter'};
+var $elm$core$Array$fromListHelp = F3(
+	function (list, nodeList, nodeListSize) {
+		fromListHelp:
+		while (true) {
+			var _v0 = A2($elm$core$Elm$JsArray$initializeFromList, $elm$core$Array$branchFactor, list);
+			var jsArray = _v0.a;
+			var remainingItems = _v0.b;
+			if (_Utils_cmp(
+				$elm$core$Elm$JsArray$length(jsArray),
+				$elm$core$Array$branchFactor) < 0) {
+				return A2(
+					$elm$core$Array$builderToArray,
+					true,
+					{nodeList: nodeList, nodeListSize: nodeListSize, tail: jsArray});
+			} else {
+				var $temp$list = remainingItems,
+					$temp$nodeList = A2(
+					$elm$core$List$cons,
+					$elm$core$Array$Leaf(jsArray),
+					nodeList),
+					$temp$nodeListSize = nodeListSize + 1;
+				list = $temp$list;
+				nodeList = $temp$nodeList;
+				nodeListSize = $temp$nodeListSize;
+				continue fromListHelp;
+			}
 		}
 	});
+var $elm$core$Array$fromList = function (list) {
+	if (!list.b) {
+		return $elm$core$Array$empty;
+	} else {
+		return A3($elm$core$Array$fromListHelp, list, _List_Nil, 0);
+	}
+};
+var $elm$core$Elm$JsArray$push = _JsArray_push;
+var $elm$core$Bitwise$and = _Bitwise_and;
+var $elm$core$Bitwise$shiftRightZfBy = _Bitwise_shiftRightZfBy;
+var $elm$core$Array$bitMask = 4294967295 >>> (32 - $elm$core$Array$shiftStep);
+var $elm$core$Basics$ge = _Utils_ge;
+var $elm$core$Elm$JsArray$singleton = _JsArray_singleton;
+var $elm$core$Elm$JsArray$unsafeGet = _JsArray_unsafeGet;
+var $elm$core$Elm$JsArray$unsafeSet = _JsArray_unsafeSet;
+var $elm$core$Array$insertTailInTree = F4(
+	function (shift, index, tail, tree) {
+		var pos = $elm$core$Array$bitMask & (index >>> shift);
+		if (_Utils_cmp(
+			pos,
+			$elm$core$Elm$JsArray$length(tree)) > -1) {
+			if (shift === 5) {
+				return A2(
+					$elm$core$Elm$JsArray$push,
+					$elm$core$Array$Leaf(tail),
+					tree);
+			} else {
+				var newSub = $elm$core$Array$SubTree(
+					A4($elm$core$Array$insertTailInTree, shift - $elm$core$Array$shiftStep, index, tail, $elm$core$Elm$JsArray$empty));
+				return A2($elm$core$Elm$JsArray$push, newSub, tree);
+			}
+		} else {
+			var value = A2($elm$core$Elm$JsArray$unsafeGet, pos, tree);
+			if (value.$ === 'SubTree') {
+				var subTree = value.a;
+				var newSub = $elm$core$Array$SubTree(
+					A4($elm$core$Array$insertTailInTree, shift - $elm$core$Array$shiftStep, index, tail, subTree));
+				return A3($elm$core$Elm$JsArray$unsafeSet, pos, newSub, tree);
+			} else {
+				var newSub = $elm$core$Array$SubTree(
+					A4(
+						$elm$core$Array$insertTailInTree,
+						shift - $elm$core$Array$shiftStep,
+						index,
+						tail,
+						$elm$core$Elm$JsArray$singleton(value)));
+				return A3($elm$core$Elm$JsArray$unsafeSet, pos, newSub, tree);
+			}
+		}
+	});
+var $elm$core$Bitwise$shiftLeftBy = _Bitwise_shiftLeftBy;
+var $elm$core$Array$unsafeReplaceTail = F2(
+	function (newTail, _v0) {
+		var len = _v0.a;
+		var startShift = _v0.b;
+		var tree = _v0.c;
+		var tail = _v0.d;
+		var originalTailLen = $elm$core$Elm$JsArray$length(tail);
+		var newTailLen = $elm$core$Elm$JsArray$length(newTail);
+		var newArrayLen = len + (newTailLen - originalTailLen);
+		if (_Utils_eq(newTailLen, $elm$core$Array$branchFactor)) {
+			var overflow = _Utils_cmp(newArrayLen >>> $elm$core$Array$shiftStep, 1 << startShift) > 0;
+			if (overflow) {
+				var newShift = startShift + $elm$core$Array$shiftStep;
+				var newTree = A4(
+					$elm$core$Array$insertTailInTree,
+					newShift,
+					len,
+					newTail,
+					$elm$core$Elm$JsArray$singleton(
+						$elm$core$Array$SubTree(tree)));
+				return A4($elm$core$Array$Array_elm_builtin, newArrayLen, newShift, newTree, $elm$core$Elm$JsArray$empty);
+			} else {
+				return A4(
+					$elm$core$Array$Array_elm_builtin,
+					newArrayLen,
+					startShift,
+					A4($elm$core$Array$insertTailInTree, startShift, len, newTail, tree),
+					$elm$core$Elm$JsArray$empty);
+			}
+		} else {
+			return A4($elm$core$Array$Array_elm_builtin, newArrayLen, startShift, tree, newTail);
+		}
+	});
+var $elm$core$Array$push = F2(
+	function (a, array) {
+		var tail = array.d;
+		return A2(
+			$elm$core$Array$unsafeReplaceTail,
+			A2($elm$core$Elm$JsArray$push, a, tail),
+			array);
+	});
+var $author$project$Main$update = F2(
+	function (msg, model) {
+		update:
+		while (true) {
+			switch (msg.$) {
+				case 'NoOp':
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				case 'HandleUserInput':
+					var s = msg.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{userInput: s}),
+						$elm$core$Platform$Cmd$none);
+				case 'HandleEnter':
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								terminalOutput: $elm$core$Array$toList(
+									A2(
+										$elm$core$Array$push,
+										{inputCommand: model.userInput, outputResponse: ''},
+										$elm$core$Array$fromList(model.terminalOutput))),
+								userInput: ''
+							}),
+						$elm$core$Platform$Cmd$none);
+				default:
+					var keyCode = msg.a;
+					if (keyCode === 13) {
+						var $temp$msg = $author$project$Main$HandleEnter,
+							$temp$model = model;
+						msg = $temp$msg;
+						model = $temp$model;
+						continue update;
+					} else {
+						return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+					}
+			}
+		}
+	});
+var $author$project$Main$HandleKeydown = function (a) {
+	return {$: 'HandleKeydown', a: a};
+};
 var $author$project$Main$HandleUserInput = function (a) {
 	return {$: 'HandleUserInput', a: a};
 };
@@ -5203,8 +5389,41 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
 var $elm$html$Html$header = _VirtualDom_node('header');
 var $elm$html$Html$Attributes$id = $elm$html$Html$Attributes$stringProperty('id');
-var $elm$html$Html$input = _VirtualDom_node('input');
 var $elm$html$Html$main_ = _VirtualDom_node('main');
+var $elm$html$Html$div = _VirtualDom_node('div');
+var $elm$html$Html$p = _VirtualDom_node('p');
+var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
+var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
+var $author$project$Terminal$outputView = function (model) {
+	return A2(
+		$elm$core$List$map,
+		function (x) {
+			return A2(
+				$elm$html$Html$div,
+				_List_Nil,
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text(x.inputCommand)
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text(x.outputResponse)
+							]))
+					]));
+		},
+		model);
+};
+var $elm$html$Html$pre = _VirtualDom_node('pre');
+var $elm$html$Html$section = _VirtualDom_node('section');
+var $elm$html$Html$input = _VirtualDom_node('input');
 var $elm$html$Html$Events$alwaysStop = function (x) {
 	return _Utils_Tuple2(x, true);
 };
@@ -5239,14 +5458,28 @@ var $elm$html$Html$Events$onInput = function (tagger) {
 			$elm$html$Html$Events$alwaysStop,
 			A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$targetValue)));
 };
+var $elm$json$Json$Decode$int = _Json_decodeInt;
+var $elm$html$Html$Events$keyCode = A2($elm$json$Json$Decode$field, 'keyCode', $elm$json$Json$Decode$int);
+var $elm$virtual_dom$VirtualDom$Normal = function (a) {
+	return {$: 'Normal', a: a};
+};
+var $elm$html$Html$Events$on = F2(
+	function (event, decoder) {
+		return A2(
+			$elm$virtual_dom$VirtualDom$on,
+			event,
+			$elm$virtual_dom$VirtualDom$Normal(decoder));
+	});
+var $author$project$Terminal$onKeyDown = function (tagger) {
+	return A2(
+		$elm$html$Html$Events$on,
+		'keydown',
+		A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$keyCode));
+};
 var $elm$html$Html$Attributes$placeholder = $elm$html$Html$Attributes$stringProperty('placeholder');
-var $elm$html$Html$pre = _VirtualDom_node('pre');
-var $elm$html$Html$section = _VirtualDom_node('section');
-var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
-var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
-var $author$project$Terminal$view = F2(
-	function (_v0, handleUserInput) {
+var $author$project$Terminal$view = F3(
+	function (_v0, handleUserInput, handleKeyDown) {
 		var userInput = _v0.userInput;
 		return A2(
 			$elm$html$Html$input,
@@ -5255,12 +5488,14 @@ var $author$project$Terminal$view = F2(
 					$elm$html$Html$Attributes$id('terminal__input'),
 					$elm$html$Html$Attributes$placeholder('please enter a command'),
 					$elm$html$Html$Attributes$value(userInput),
-					$elm$html$Html$Events$onInput(handleUserInput)
+					$elm$html$Html$Events$onInput(handleUserInput),
+					$author$project$Terminal$onKeyDown(handleKeyDown)
 				]),
 			_List_Nil);
 	});
 var $author$project$Main$view = function (_v0) {
 	var userInput = _v0.userInput;
+	var terminalOutput = _v0.terminalOutput;
 	return {
 		body: _List_fromArray(
 			[
@@ -5297,22 +5532,20 @@ var $author$project$Main$view = function (_v0) {
 									[
 										$elm$html$Html$Attributes$class('main-content__block')
 									]),
+								$author$project$Terminal$outputView(terminalOutput)),
+								A2(
+								$elm$html$Html$section,
 								_List_fromArray(
 									[
-										A2(
-										$elm$html$Html$input,
-										_List_fromArray(
-											[
-												$elm$html$Html$Attributes$id('terminal__input'),
-												$elm$html$Html$Attributes$placeholder('please enter a command'),
-												$elm$html$Html$Attributes$value(userInput),
-												$elm$html$Html$Events$onInput($author$project$Main$HandleUserInput)
-											]),
-										_List_Nil),
-										A2(
+										$elm$html$Html$Attributes$class('main-content__block')
+									]),
+								_List_fromArray(
+									[
+										A3(
 										$author$project$Terminal$view,
 										{userInput: userInput},
-										$author$project$Main$HandleUserInput)
+										$author$project$Main$HandleUserInput,
+										$author$project$Main$HandleKeydown)
 									]))
 							]))
 					]))
