@@ -1,10 +1,11 @@
 module Main exposing (main)
 
+import Array exposing (fromList, push, toList)
 import Browser exposing (Document)
-import Html exposing (header, input, main_, pre, section, text)
-import Html.Attributes exposing (class, id, placeholder, value)
-import Html.Events exposing (onInput)
-import Platform.Cmd as Cmd
+import Html exposing (header, main_, pre, section, text)
+import Html.Attributes exposing (class, id)
+import Html.Events exposing (keyCode)
+import Platform.Cmd as Cmd exposing (Cmd)
 import Terminal
 
 
@@ -24,6 +25,7 @@ initialState =
 type Msg
     = NoOp
     | HandleUserInput String
+    | HandleKeydown Int
     | HandleEnter
 
 
@@ -37,11 +39,23 @@ update msg model =
             ( { model | userInput = s }, Cmd.none )
 
         HandleEnter ->
-            ( model, Cmd.none )
+            ( { model
+                | userInput = ""
+                , terminalOutput = toList (push { inputCommand = model.userInput, outputResponse = "" } (fromList model.terminalOutput))
+              }
+            , Cmd.none
+            )
+
+        HandleKeydown keyCode ->
+            if keyCode == 13 then
+                update HandleEnter model
+
+            else
+                update NoOp model
 
 
 view : Model -> Document Msg
-view { userInput } =
+view { userInput, terminalOutput } =
     { title =
         "~/jvterm"
     , body =
@@ -51,14 +65,14 @@ view { userInput } =
             , main_ [ class "main-content__container" ]
                 [ section [ class "main-content__block" ] [ text "Content block 1" ]
                 , section [ class "main-content__block" ]
-                    [ input
-                        [ id "terminal__input"
-                        , placeholder "please enter a command"
-                        , value userInput
-                        , onInput HandleUserInput
-                        ]
-                        []
-                    , Terminal.view { userInput = userInput } HandleUserInput
+                    (Terminal.outputView
+                        terminalOutput
+                    )
+                , section [ class "main-content__block" ]
+                    [ Terminal.view
+                        { userInput = userInput }
+                        HandleUserInput
+                        HandleKeydown
                     ]
                 ]
             ]
