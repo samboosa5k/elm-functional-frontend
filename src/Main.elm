@@ -2,7 +2,7 @@ module Main exposing (main)
 
 import Array exposing (fromList, push, toList)
 import Browser exposing (Document)
-import Html exposing (header, main_, pre, section, text)
+import Html exposing (div, h1, header, main_, pre, section, text)
 import Html.Attributes exposing (class, id)
 import Html.Events exposing (keyCode)
 import Platform.Cmd as Cmd exposing (Cmd)
@@ -61,15 +61,16 @@ view { userInput, terminalOutput } =
     , body =
         [ pre
             [ id "app" ]
-            [ header [] []
+            [ header [ class "header__container" ]
+                [ Terminal.titleView "/user/jasper/home"
+                ]
             , main_ [ class "main-content__container" ]
-                [ section [ class "main-content__block" ] [ text "Content block 1" ]
-                , section [ class "main-content__block" ]
+                [ section [ class "main-content__block" ]
                     (Terminal.outputView
                         terminalOutput
                     )
                 , section [ class "main-content__block" ]
-                    [ Terminal.view
+                    [ Terminal.inputView
                         { userInput = userInput }
                         HandleUserInput
                         HandleKeydown

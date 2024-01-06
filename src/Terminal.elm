@@ -1,7 +1,7 @@
-module Terminal exposing (outputView, view)
+module Terminal exposing (inputView, outputView, titleView)
 
-import Html exposing (Attribute, Html, div, input, p, text)
-import Html.Attributes exposing (id, placeholder, value)
+import Html exposing (Attribute, Html, div, h1, input, p, text)
+import Html.Attributes exposing (class, id, placeholder, value)
 import Html.Events exposing (keyCode, on, onInput)
 import Json.Decode as Json
 
@@ -24,8 +24,8 @@ onKeyDown tagger =
     on "keydown" (Json.map tagger keyCode)
 
 
-view : { a | userInput : String } -> (String -> msg) -> (Int -> msg) -> Html.Html msg
-view { userInput } handleUserInput handleKeyDown =
+inputView : { a | userInput : String } -> (String -> msg) -> (Int -> msg) -> Html msg
+inputView { userInput } handleUserInput handleKeyDown =
     input
         [ id "terminal__input"
         , placeholder "please enter a command"
@@ -34,3 +34,10 @@ view { userInput } handleUserInput handleKeyDown =
         , onKeyDown handleKeyDown
         ]
         []
+
+
+titleView : String -> Html msg
+titleView titleText =
+    div [ class "title-bar__container" ]
+        [ h1 [ class "title-bar__heading" ] [ text titleText ]
+        ]
