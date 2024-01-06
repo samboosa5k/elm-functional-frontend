@@ -5211,6 +5211,7 @@ var $author$project$Main$subscriptions = function (_v0) {
 	return $elm$core$Platform$Sub$none;
 };
 var $author$project$Main$HandleEnter = {$: 'HandleEnter'};
+var $author$project$Main$NoOp = {$: 'NoOp'};
 var $elm$core$Array$fromListHelp = F3(
 	function (list, nodeList, nodeListSize) {
 		fromListHelp:
@@ -5367,7 +5368,11 @@ var $author$project$Main$update = F2(
 						model = $temp$model;
 						continue update;
 					} else {
-						return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+						var $temp$msg = $author$project$Main$NoOp,
+							$temp$model = model;
+						msg = $temp$msg;
+						model = $temp$model;
+						continue update;
 					}
 			}
 		}
@@ -5389,40 +5394,6 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
 var $elm$html$Html$header = _VirtualDom_node('header');
 var $elm$html$Html$Attributes$id = $elm$html$Html$Attributes$stringProperty('id');
-var $elm$html$Html$main_ = _VirtualDom_node('main');
-var $elm$html$Html$div = _VirtualDom_node('div');
-var $elm$html$Html$p = _VirtualDom_node('p');
-var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
-var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
-var $author$project$Terminal$outputView = function (model) {
-	return A2(
-		$elm$core$List$map,
-		function (x) {
-			return A2(
-				$elm$html$Html$div,
-				_List_Nil,
-				_List_fromArray(
-					[
-						A2(
-						$elm$html$Html$p,
-						_List_Nil,
-						_List_fromArray(
-							[
-								$elm$html$Html$text(x.inputCommand)
-							])),
-						A2(
-						$elm$html$Html$p,
-						_List_Nil,
-						_List_fromArray(
-							[
-								$elm$html$Html$text(x.outputResponse)
-							]))
-					]));
-		},
-		model);
-};
-var $elm$html$Html$pre = _VirtualDom_node('pre');
-var $elm$html$Html$section = _VirtualDom_node('section');
 var $elm$html$Html$input = _VirtualDom_node('input');
 var $elm$html$Html$Events$alwaysStop = function (x) {
 	return _Utils_Tuple2(x, true);
@@ -5478,7 +5449,7 @@ var $author$project$Terminal$onKeyDown = function (tagger) {
 };
 var $elm$html$Html$Attributes$placeholder = $elm$html$Html$Attributes$stringProperty('placeholder');
 var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
-var $author$project$Terminal$view = F3(
+var $author$project$Terminal$inputView = F3(
 	function (_v0, handleUserInput, handleKeyDown) {
 		var userInput = _v0.userInput;
 		return A2(
@@ -5493,6 +5464,62 @@ var $author$project$Terminal$view = F3(
 				]),
 			_List_Nil);
 	});
+var $elm$html$Html$main_ = _VirtualDom_node('main');
+var $elm$html$Html$div = _VirtualDom_node('div');
+var $elm$html$Html$p = _VirtualDom_node('p');
+var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
+var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
+var $author$project$Terminal$outputView = function (model) {
+	return A2(
+		$elm$core$List$map,
+		function (x) {
+			return A2(
+				$elm$html$Html$div,
+				_List_Nil,
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text(x.inputCommand)
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text(x.outputResponse)
+							]))
+					]));
+		},
+		model);
+};
+var $elm$html$Html$pre = _VirtualDom_node('pre');
+var $elm$html$Html$section = _VirtualDom_node('section');
+var $elm$html$Html$h1 = _VirtualDom_node('h1');
+var $author$project$Terminal$titleView = function (titleText) {
+	return A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('title-bar__container')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$h1,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('title-bar__heading')
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text(titleText)
+					]))
+			]));
+};
 var $author$project$Main$view = function (_v0) {
 	var userInput = _v0.userInput;
 	var terminalOutput = _v0.terminalOutput;
@@ -5507,7 +5534,16 @@ var $author$project$Main$view = function (_v0) {
 					]),
 				_List_fromArray(
 					[
-						A2($elm$html$Html$header, _List_Nil, _List_Nil),
+						A2(
+						$elm$html$Html$header,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('header__container')
+							]),
+						_List_fromArray(
+							[
+								$author$project$Terminal$titleView('/user/jasper/home')
+							])),
 						A2(
 						$elm$html$Html$main_,
 						_List_fromArray(
@@ -5542,7 +5578,7 @@ var $author$project$Main$view = function (_v0) {
 								_List_fromArray(
 									[
 										A3(
-										$author$project$Terminal$view,
+										$author$project$Terminal$inputView,
 										{userInput: userInput},
 										$author$project$Main$HandleUserInput,
 										$author$project$Main$HandleKeydown)
