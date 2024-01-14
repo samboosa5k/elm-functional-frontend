@@ -1,4 +1,4 @@
-module Terminal exposing (inputView, outputView, titleView)
+module Terminal exposing (inputView, onKeyDown, outputView, titleView)
 
 import Html exposing (Attribute, Html, div, h1, input, p, text)
 import Html.Attributes exposing (class, id, placeholder, value)
