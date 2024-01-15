@@ -2,7 +2,7 @@
 
 function build_styles() {
 
-    local output_name="style.css"
+    local output_name="dist/style.css"
     local command="./deps/dart-sass/sass styles/style.scss"
 
     $command $output_name

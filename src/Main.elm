@@ -1,46 +1,35 @@
 module Main exposing (main)
 
-import Array exposing (fromList, push, toList)
 import Browser exposing (Document)
-import Html exposing (div, header, main_, pre)
-import Html.Attributes exposing (class, id)
-import Html.Events exposing (keyCode)
-import Input
+import Html exposing (main_, pre)
+import Html.Attributes exposing (id)
 import List.Extra
 import Platform.Cmd as Cmd exposing (Cmd)
 import Terminal
 
 
 type alias Model =
-    { userInput : String
-    , terminalOutput : List { inputCommand : String, outputResponse : String }
-    , inputWindows : List Input.Model
+    { terminalSessions : List Terminal.Model
     }
 
 
 initialState : Model
 initialState =
-    { userInput = ""
-    , terminalOutput = [ { inputCommand = "", outputResponse = "" } ]
-    , inputWindows =
+    { terminalSessions =
         [ { id_ = 0
           , content = "first terminal"
           , outputResponse = ""
           }
-        , { id_ = 1
-          , content = "second terminal"
-          , outputResponse = ""
-          }
+        , Terminal.initNew 1
+        , Terminal.initNew 2
+        , Terminal.initNew 3
         ]
     }
 
 
 type Msg
     = NoOp
-    | HandleUserInput String
-    | HandleKeydown Int
-    | HandleEnter
-    | UpdateWindow Int Input.Msg
+    | UpdateSession Int Terminal.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -49,30 +38,12 @@ update msg model =
         NoOp ->
             ( model, Cmd.none )
 
-        HandleUserInput s ->
-            ( { model | userInput = s }, Cmd.none )
-
-        HandleEnter ->
-            ( { model
-                | userInput = ""
-                , terminalOutput = toList (push { inputCommand = model.userInput, outputResponse = "" } (fromList model.terminalOutput))
-              }
-            , Cmd.none
-            )
-
-        HandleKeydown keyCode ->
-            if keyCode == 13 then
-                update HandleEnter model
-
-            else
-                update NoOp model
-
-        UpdateWindow indexId windowMsg ->
+        UpdateSession indexId sessionMsg ->
             -- REFERENCE: https://blog.revathskumar.com/2018/05/elm-message-passing-between-modules.html
             -- ARTICLE AUTHOR: https://github.com/revathskumar
             let
                 maybeIndex =
-                    List.Extra.findIndex (\windowData -> windowData.id_ == indexId) model.inputWindows
+                    List.Extra.findIndex (\sessionData -> sessionData.id_ == indexId) model.terminalSessions
 
                 index =
                     case maybeIndex of
@@ -83,47 +54,31 @@ update msg model =
                             -1
 
                 selectedInput =
-                    case List.Extra.getAt index model.inputWindows of
-                        Just windowInput ->
-                            windowInput
+                    case List.Extra.getAt index model.terminalSessions of
+                        Just sessionInput ->
+                            sessionInput
 
                         Nothing ->
-                            { id_ = 0, content = "", outputResponse = "" }
+                            Terminal.initNew 0
 
                 ( updatedInput, cmdMsg ) =
-                    Input.update windowMsg selectedInput
+                    Terminal.update sessionMsg selectedInput
 
                 inputs =
-                    List.Extra.setAt index updatedInput model.inputWindows
+                    List.Extra.setAt index updatedInput model.terminalSessions
             in
-            ( { model | inputWindows = inputs }, Cmd.map (UpdateWindow indexId) cmdMsg )
+            ( { model | terminalSessions = inputs }, Cmd.map (UpdateSession indexId) cmdMsg )
 
 
 view : Model -> Document Msg
-view { userInput, terminalOutput, inputWindows } =
+view { terminalSessions } =
     { title =
         "~/jvterm"
     , body =
         [ pre
             [ id "app" ]
-            [ header [ class "header__container" ]
-                [ Terminal.titleView "/user/jasper/home"
-                ]
-            , main_ [ class "main-content__container" ]
-                [ div
-                    []
-                    (Terminal.outputView
-                        terminalOutput
-                    )
-                , div
-                    [ class "main-content__block" ]
-                    [ Terminal.inputView
-                        { userInput = userInput }
-                        HandleUserInput
-                        HandleKeydown
-                    ]
-                , div [ class "main-content__block" ] [ Input.multiInput inputWindows UpdateWindow ]
-                ]
+            [ main_ []
+                (Terminal.view terminalSessions UpdateSession)
             ]
         ]
     }

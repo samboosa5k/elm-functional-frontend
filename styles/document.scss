@@ -8,9 +8,6 @@
 }
 
 body {
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    grid-template-rows: repeat(12, 1fr);
     height: 100vh;
     margin: 0;
     padding: 0;
@@ -21,16 +18,26 @@ body {
 }
 
 #app {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: repeat(12, 1fr);
+}
+
+main {
     position: relative;
     display: flex;
     flex-direction: column;
     grid-column: 2 / span 10;
     grid-row: 1 / stretch;
     margin: 1em;
-    background: colors.$dark-color-rgb;
-    border: 1px solid colors.$medium-color-rgb;
-    border-radius: 0.25em;
     overflow: hidden;
+
+    section {
+        margin: 0.5em;
+        background: colors.$dark-color-rgb;
+        border: 1px solid colors.$medium-color-rgb;
+        border-radius: 0.25em;
+    }
 }
 
 h1,
