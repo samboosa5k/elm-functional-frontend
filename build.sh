@@ -3,7 +3,7 @@
 function build() {
 
     local output_name="elm.js"
-    local command="elm make src/Main.elm --output=$output_name"
+    local command="elm make src/Main.elm --output=dist/$output_name"
 
     $command
 }

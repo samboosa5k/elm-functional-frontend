@@ -1,4 +1,4 @@
-module Route exposing (Route(..), fromUrl, replaceUrl, routeHref, routeParser, routeToString)
+module Deprecated.Route exposing (Route(..), fromUrl, replaceUrl, routeHref, routeParser, routeToString)
 
 import Browser.Navigation as Nav
 import Html exposing (Attribute)
