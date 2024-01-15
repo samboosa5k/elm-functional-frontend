@@ -7,6 +7,7 @@ build _delightful_ web-apps in this purely functional language.
 
 ## Screenshot
 
+![Screenshot](./assets/screenshot_multi-session.png)
 ![Screenshot](./assets/screenshot.png)
 
 ---
