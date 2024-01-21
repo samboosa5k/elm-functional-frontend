@@ -78,6 +78,7 @@ update sessionMsg inputModel =
                     in
                     ( { newModel | outputResponse = "Session cleared" }, Cmd.none )
 
+                -- Logic for creating sessions should be moved up to Main
                 Ok CreateSession ->
                     ( { inputModel
                         | currentInput = ""
@@ -126,6 +127,13 @@ onKeyDown tagger =
 
 
 inputField : Model -> (String -> msg) -> (Int -> msg) -> Html msg
+
+
+
+-- Either all command parsing is done in main, or  we map the parser + update function to a parameter
+-- e.g. handleParsedCommand
+
+
 inputField { id_, currentInput } handleInput handleKeyDown =
     input
         [ id (String.fromInt id_)

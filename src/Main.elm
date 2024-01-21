@@ -28,7 +28,7 @@ initialState =
 
 type Msg
     = NoOp
-    | UpdateSession Int Terminal.Msg
+    | TerminalSession Int Terminal.Msg
     | CreateSession
 
 
@@ -38,12 +38,12 @@ update msg model =
         NoOp ->
             ( model, Cmd.none )
 
-        UpdateSession indexId sessionMsg ->
+        TerminalSession id_ sessionMsg ->
             -- REFERENCE: https://blog.revathskumar.com/2018/05/elm-message-passing-between-modules.html
             -- ARTICLE AUTHOR: https://github.com/revathskumar\
             let
                 maybeIndex =
-                    List.Extra.findIndex (\sessionData -> sessionData.id_ == indexId) model.terminalSessions
+                    List.Extra.findIndex (\sessionData -> sessionData.id_ == id_) model.terminalSessions
 
                 index =
                     case maybeIndex of
@@ -68,7 +68,7 @@ update msg model =
                 inputs =
                     List.Extra.setAt index updatedInput model.terminalSessions
             in
-            ( { model | terminalSessions = inputs }, Cmd.map (UpdateSession indexId) cmdMsg )
+            ( { model | terminalSessions = inputs }, Cmd.map (TerminalSession id_) cmdMsg )
 
         CreateSession ->
             let
@@ -89,7 +89,7 @@ view { terminalSessions } =
         [ pre
             [ id "app" ]
             [ main_ []
-                (Terminal.view terminalSessions UpdateSession)
+                (Terminal.view terminalSessions TerminalSession)
             ]
         ]
     }
