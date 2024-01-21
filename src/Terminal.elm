@@ -1,9 +1,24 @@
-module Terminal exposing (Model, Msg, init, initNew, update, view)
+module Terminal exposing (Model, Msg, commandParser, init, initNew, update, view)
 
 import Html exposing (Attribute, Html, div, h2, header, input, p, section, text)
 import Html.Attributes exposing (class, id, placeholder, value)
 import Html.Events exposing (keyCode, on, onInput)
 import Json.Decode as Json
+import Parser exposing (..)
+
+
+type Command
+    = ClearSession
+    | CreateSession
+    | Nothing
+
+
+commandParser : Parser Command
+commandParser =
+    oneOf
+        [ Parser.map (\_ -> ClearSession) (keyword "clear")
+        , Parser.map (\_ -> CreateSession) (keyword "new")
+        ]
 
 
 
@@ -11,20 +26,25 @@ import Json.Decode as Json
 
 
 type alias Model =
-    { id_ : Int, content : String, outputResponse : String }
+    { id_ : Int
+    , currentInput : String
+    , parsedCommand : Command
+    , outputResponse : String
+    }
 
 
 init : Model
 init =
     { id_ = 0
-    , content = "first terminal"
+    , currentInput = "first terminal"
+    , parsedCommand = Nothing
     , outputResponse = ""
     }
 
 
 initNew : Int -> Model
 initNew i =
-    { init | id_ = i, content = "New terminal entry field" ++ String.fromInt i }
+    { init | id_ = i, currentInput = "New terminal entry field" ++ String.fromInt i }
 
 
 
@@ -43,10 +63,49 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update sessionMsg inputModel =
     case sessionMsg of
         HandleInput inputContent ->
-            ( { inputModel | content = inputContent }, Cmd.none )
+            ( { inputModel | currentInput = inputContent }, Cmd.none )
 
         HandleEnter ->
-            ( { inputModel | content = "", outputResponse = inputModel.content }, Cmd.none )
+            let
+                parsedCommandResult =
+                    Parser.run commandParser inputModel.currentInput
+            in
+            case parsedCommandResult of
+                Ok ClearSession ->
+                    let
+                        newModel =
+                            initNew inputModel.id_
+                    in
+                    ( { newModel | outputResponse = "Session cleared" }, Cmd.none )
+
+                Ok CreateSession ->
+                    ( { inputModel
+                        | currentInput = ""
+                        , parsedCommand = CreateSession
+                        , outputResponse =
+                            inputModel.outputResponse
+                                ++ "\n"
+                                ++ inputModel.currentInput
+                                ++ "\n"
+                                ++ "new session created"
+                      }
+                    , Cmd.none
+                    )
+
+                Ok Nothing ->
+                    ( inputModel, Cmd.none )
+
+                Err _ ->
+                    ( { inputModel
+                        | currentInput = ""
+                        , parsedCommand = Nothing
+                        , outputResponse =
+                            inputModel.outputResponse
+                                ++ "\n"
+                                ++ inputModel.currentInput
+                      }
+                    , Cmd.none
+                    )
 
         HandleKeyCode keyCode ->
             if keyCode == 13 then
@@ -67,43 +126,34 @@ onKeyDown tagger =
 
 
 inputField : Model -> (String -> msg) -> (Int -> msg) -> Html msg
-inputField { id_, content } handleInput handleKeyDown =
+inputField { id_, currentInput } handleInput handleKeyDown =
     input
         [ id (String.fromInt id_)
         , class "terminal-input__field"
         , placeholder "Please enter a command"
-        , value content
+        , value currentInput
         , onInput handleInput
         , onKeyDown handleKeyDown
         ]
         []
 
 
-titleView : String -> Html msg
-titleView titleText =
-    div [ class "title-bar__container" ]
-        [ h2 [ class "title-bar__heading" ] [ text titleText ]
-        ]
-
-
-output : Model -> Html msg
-output { outputResponse } =
-    div [ class "main-content__block" ]
-        [ p [ class "main-content__block" ] [ text outputResponse ] ]
-
-
 view : List Model -> (Int -> Msg -> msg) -> List (Html msg)
-view terminalSessions updateByIndex =
+view terminalSessions updateBySessionID =
     if List.length terminalSessions > 0 then
         List.map
             (\session ->
-                Html.map (updateByIndex session.id_)
+                Html.map (updateBySessionID session.id_)
                     (section []
                         [ header [ class "header__container" ]
-                            [ titleView "/usr/bin/jvterm" ]
-                        , div [ class "main-content__container" ]
-                            [ output session
-                            , div [ class "main-content__block" ]
+                            [ div [ class "title-bar__container" ]
+                                [ h2 [ class "title-bar__heading" ] [ text "jvterm" ]
+                                ]
+                            ]
+                        , div [ class "main-currentInput__container" ]
+                            [ div [ class "main-currentInput__block" ]
+                                [ p [ class "main-currentInput__block" ] [ text session.outputResponse ] ]
+                            , div [ class "main-currentInput__block" ]
                                 [ div [ class "terminal-input" ]
                                     [ inputField
                                         session

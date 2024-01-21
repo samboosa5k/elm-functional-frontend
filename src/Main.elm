@@ -1,11 +1,13 @@
 module Main exposing (main)
 
+import Array exposing (Array, fromList, push, toList)
 import Browser exposing (Document)
 import Html exposing (main_, pre)
 import Html.Attributes exposing (id)
 import List.Extra
+import Parser
 import Platform.Cmd as Cmd exposing (Cmd)
-import Terminal
+import Terminal exposing (commandParser)
 
 
 type alias Model =
@@ -16,10 +18,7 @@ type alias Model =
 initialState : Model
 initialState =
     { terminalSessions =
-        [ { id_ = 0
-          , content = "first terminal"
-          , outputResponse = ""
-          }
+        [ Terminal.initNew 0
         , Terminal.initNew 1
         , Terminal.initNew 2
         , Terminal.initNew 3
@@ -30,6 +29,7 @@ initialState =
 type Msg
     = NoOp
     | UpdateSession Int Terminal.Msg
+    | CreateSession
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -40,7 +40,7 @@ update msg model =
 
         UpdateSession indexId sessionMsg ->
             -- REFERENCE: https://blog.revathskumar.com/2018/05/elm-message-passing-between-modules.html
-            -- ARTICLE AUTHOR: https://github.com/revathskumar
+            -- ARTICLE AUTHOR: https://github.com/revathskumar\
             let
                 maybeIndex =
                     List.Extra.findIndex (\sessionData -> sessionData.id_ == indexId) model.terminalSessions
@@ -61,6 +61,7 @@ update msg model =
                         Nothing ->
                             Terminal.initNew 0
 
+                -- Before upating input and running msg, evaluate the submitted command
                 ( updatedInput, cmdMsg ) =
                     Terminal.update sessionMsg selectedInput
 
@@ -68,6 +69,16 @@ update msg model =
                     List.Extra.setAt index updatedInput model.terminalSessions
             in
             ( { model | terminalSessions = inputs }, Cmd.map (UpdateSession indexId) cmdMsg )
+
+        CreateSession ->
+            let
+                newID =
+                    List.maximum (List.map (\x -> x.id_) model.terminalSessions)
+
+                newModel =
+                    Terminal.initNew (Maybe.withDefault 0 newID)
+            in
+            ( { model | terminalSessions = toList (push newModel (fromList model.terminalSessions)) }, Cmd.none )
 
 
 view : Model -> Document Msg

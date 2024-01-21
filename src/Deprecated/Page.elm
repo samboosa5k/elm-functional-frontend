@@ -43,16 +43,16 @@
 --         []
 -- viewer : Model -> Html Msg
 -- viewer model =
---     main_ [ class "main-content__container" ]
---         [ section [ class "main-content__block" ] [ viewContent model ]
---         , section [ class "main-content__block" ]
+--     main_ [ class "main-currentInput__container" ]
+--         [ section [ class "main-currentInput__block" ] [ viewContent model ]
+--         , section [ class "main-currentInput__block" ]
 --             [ p [] [ text "The current URL is: " ]
 --             , p [] [ text (Url.toString model.url) ]
 --             , text "The resolved route is: "
 --             , p [] [ text (Deprecated.Route.routeToString model.route) ]
 --             ]
---         , section [ class "main-content__block" ] [ terminalInput model ]
---         , section [ class "main-content__block" ] [ terminalOutput model ]
+--         , section [ class "main-currentInput__block" ] [ terminalInput model ]
+--         , section [ class "main-currentInput__block" ] [ terminalOutput model ]
 --         ]
 
 
