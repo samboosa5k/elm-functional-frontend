@@ -156,10 +156,10 @@ view terminalSessions updateBySessionID =
                                 [ h2 [ class "title-bar__heading" ] [ text "jvterm" ]
                                 ]
                             ]
-                        , div [ class "cli-session__container" ]
-                            [ div [ class "cli-session__block" ]
-                                [ p [ class "cli-session__block" ] [ text session.outputResponse ] ]
-                            , div [ class "cli-session__block" ]
+                        , div [ class "main-cli__container" ]
+                            [ div [ class "main-cli__block" ]
+                                [ p [ class "main-cli__block" ] [ text session.outputResponse ] ]
+                            , div [ class "main-cli__block" ]
                                 [ div [ class "terminal-input" ]
                                     [ inputField
                                         session
