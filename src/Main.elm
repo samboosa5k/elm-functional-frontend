@@ -5,9 +5,10 @@ import Browser exposing (Document)
 import Html exposing (main_, pre)
 import Html.Attributes exposing (id)
 import List.Extra
-import Parser
+import Parser exposing (..)
 import Platform.Cmd as Cmd exposing (Cmd)
-import Terminal exposing (commandParser)
+import Terminal exposing (Command, commandParser)
+import Url.Parser as Parser
 
 
 type alias Model =
@@ -29,6 +30,7 @@ initialState =
 type Msg
     = NoOp
     | TerminalSession Int Terminal.Msg
+    | Evaluate Int Terminal.Msg
     | CreateSession
 
 
@@ -37,6 +39,54 @@ update msg model =
     case msg of
         NoOp ->
             ( model, Cmd.none )
+
+        Evaluate id_ sessionMsg ->
+            let
+                maybeIndex =
+                    List.Extra.findIndex (\sessionData -> sessionData.id_ == id_) model.terminalSessions
+
+                index =
+                    case maybeIndex of
+                        Just indexNr ->
+                            indexNr
+
+                        Nothing ->
+                            -1
+
+                selectedInput =
+                    case List.Extra.getAt index model.terminalSessions of
+                        Just sessionInput ->
+                            sessionInput
+
+                        Nothing ->
+                            Terminal.initNew 0
+            in
+            if selectedInput.evaluate == True then
+                let
+                    ( updatedInput, cmdMsg ) =
+                        Terminal.update sessionMsg selectedInput
+
+                    inputs =
+                        List.Extra.setAt index updatedInput model.terminalSessions
+
+                    newID =
+                        List.maximum (List.map (\x -> x.id_) model.terminalSessions)
+
+                    newModel =
+                        Terminal.initNew (Maybe.withDefault 0 newID)
+                in
+                ( { model | terminalSessions = toList (push newModel (fromList inputs)) }, Cmd.map (TerminalSession id_) cmdMsg )
+
+            else
+                -- do update only
+                let
+                    ( updatedInput, cmdMsg ) =
+                        Terminal.update sessionMsg selectedInput
+
+                    inputs =
+                        List.Extra.setAt index updatedInput model.terminalSessions
+                in
+                ( { model | terminalSessions = inputs }, Cmd.map (TerminalSession id_) cmdMsg )
 
         TerminalSession id_ sessionMsg ->
             -- REFERENCE: https://blog.revathskumar.com/2018/05/elm-message-passing-between-modules.html
@@ -89,7 +139,7 @@ view { terminalSessions } =
         [ pre
             [ id "app" ]
             [ main_ []
-                (Terminal.view terminalSessions TerminalSession)
+                (Terminal.view terminalSessions Evaluate)
             ]
         ]
     }

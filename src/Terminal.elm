@@ -1,4 +1,4 @@
-module Terminal exposing (Model, Msg, commandParser, init, initNew, update, view)
+module Terminal exposing (Command, Model, Msg, commandParser, init, initNew, update, view)
 
 import Html exposing (Attribute, Html, div, h2, header, input, p, section, text)
 import Html.Attributes exposing (class, id, placeholder, value)
@@ -28,7 +28,7 @@ commandParser =
 type alias Model =
     { id_ : Int
     , currentInput : String
-    , parsedCommand : Command
+    , evaluate : Bool
     , outputResponse : String
     }
 
@@ -37,7 +37,7 @@ init : Model
 init =
     { id_ = 0
     , currentInput = "first terminal"
-    , parsedCommand = Nothing
+    , evaluate = False
     , outputResponse = ""
     }
 
@@ -66,48 +66,46 @@ update sessionMsg inputModel =
             ( { inputModel | currentInput = inputContent }, Cmd.none )
 
         HandleEnter ->
-            let
-                parsedCommandResult =
-                    Parser.run commandParser inputModel.currentInput
-            in
-            case parsedCommandResult of
-                Ok ClearSession ->
-                    let
-                        newModel =
-                            initNew inputModel.id_
-                    in
-                    ( { newModel | outputResponse = "Session cleared" }, Cmd.none )
+            ( { inputModel | evaluate = True }, Cmd.none )
 
-                -- Logic for creating sessions should be moved up to Main
-                Ok CreateSession ->
-                    ( { inputModel
-                        | currentInput = ""
-                        , parsedCommand = CreateSession
-                        , outputResponse =
-                            inputModel.outputResponse
-                                ++ "\n"
-                                ++ inputModel.currentInput
-                                ++ "\n"
-                                ++ "new session created"
-                      }
-                    , Cmd.none
-                    )
-
-                Ok Nothing ->
-                    ( inputModel, Cmd.none )
-
-                Err _ ->
-                    ( { inputModel
-                        | currentInput = ""
-                        , parsedCommand = Nothing
-                        , outputResponse =
-                            inputModel.outputResponse
-                                ++ "\n"
-                                ++ inputModel.currentInput
-                      }
-                    , Cmd.none
-                    )
-
+        -- let
+        --     parsedCommandResult =
+        --         Parser.run commandParser inputModel.currentInput
+        -- in
+        -- case parsedCommandResult of
+        --     Ok ClearSession ->
+        --         let
+        --             newModel =
+        --                 initNew inputModel.id_
+        --         in
+        --         ( { newModel | outputResponse = "Session cleared" }, Cmd.none )
+        --     -- Logic for creating sessions should be moved up to Main
+        --     Ok CreateSession ->
+        --         ( { inputModel
+        --             | currentInput = ""
+        --             , parsedCommand = CreateSession
+        --             , outputResponse =
+        --                 inputModel.outputResponse
+        --                     ++ "\n"
+        --                     ++ inputModel.currentInput
+        --                     ++ "\n"
+        --                     ++ "new session created"
+        --           }
+        --         , Cmd.none
+        --         )
+        --     Ok Nothing ->
+        --         ( inputModel, Cmd.none )
+        --     Err _ ->
+        --         ( { inputModel
+        --             | currentInput = ""
+        --             , parsedCommand = Nothing
+        --             , outputResponse =
+        --                 inputModel.outputResponse
+        --                     ++ "\n"
+        --                     ++ inputModel.currentInput
+        --           }
+        --         , Cmd.none
+        --         )
         HandleKeyCode keyCode ->
             if keyCode == 13 then
                 update HandleEnter inputModel
