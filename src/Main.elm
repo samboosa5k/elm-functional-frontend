@@ -3,8 +3,10 @@ module Main exposing (main)
 import Array exposing (Array, fromList, push, toList)
 import Browser exposing (Document)
 import Dict exposing (Dict)
-import Html exposing (main_, pre, text)
-import Html.Attributes exposing (id)
+import Html exposing (Attribute, Html, div, h2, header, input, main_, p, pre, section, text)
+import Html.Attributes exposing (class, id, type_, value)
+import Html.Events exposing (keyCode, on, onInput)
+import Json.Decode as Json
 import List.Extra
 import Parser exposing (..)
 import Platform.Cmd as Cmd exposing (Cmd)
@@ -140,19 +142,45 @@ type alias TerminalSessionData =
     }
 
 
+cliOutput : List ( String, String ) -> List (Html msg)
+cliOutput model =
+    List.map (\( x, y ) -> p [] [ text (x ++ y) ]) model
+
+
+cliInput : String -> (String -> msg) -> (Int -> msg) -> Html msg
+cliInput model onInput_ onKeyDown_ =
+    input [ class "terminal-input__field", type_ "text", value model, onInput onInput_, onKeyDown onKeyDown_ ] []
+
+
+onKeyDown : (Int -> msg) -> Attribute msg
+onKeyDown tagger =
+    on "keydown" (Json.map tagger keyCode)
+
+
+cliSessionView : String -> TerminalSessionData -> Html Msg
+cliSessionView input model =
+    div [ class "cli-session__block" ]
+        [ div [ class "terminal-input__container" ]
+            (cliOutput model.output)
+        , cliInput input
+            Input
+            (\keyCode ->
+                case keyCode of
+                    13 ->
+                        Evaluate
+
+                    _ ->
+                        NoOp
+            )
+        ]
+
+
 initialSessionData : TerminalSessionData
 initialSessionData =
     { id_ = "initial"
     , commandHistory = []
     , output = []
     }
-
-
-terminalSessions : Dict String TerminalSessionData
-terminalSessions =
-    Dict.fromList
-        [ ( "initial", initialSessionData )
-        ]
 
 
 type alias Model =
@@ -174,7 +202,10 @@ initialModel =
     , terminalCount = 1
     , focussedTerminalID = "initial"
     , focussedTerminalInput = ""
-    , terminalSessionsData = terminalSessions
+    , terminalSessionsData =
+        Dict.fromList
+            [ ( "initial", initialSessionData )
+            ]
     }
 
 
@@ -183,8 +214,10 @@ initialModel =
 
 
 type Msg
-    = Init_ Model
-    | NoOp_
+    = Init Model
+    | NoOp
+    | Input String
+    | Evaluate
 
 
 
@@ -194,11 +227,17 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        Init_ model_ ->
+        Init model_ ->
             ( model_, Cmd.none )
 
-        NoOp_ ->
+        NoOp ->
             ( model, Cmd.none )
+
+        Input input ->
+            ( { model | focussedTerminalInput = input }, Cmd.none )
+
+        Evaluate ->
+            ( initialModel, Cmd.none )
 
 
 
@@ -211,8 +250,20 @@ view model =
     , body =
         [ pre
             [ id "app" ]
-            [ main_ []
-                [ text "Hello" ]
+            [ header [ class "header__container" ]
+                [ div [ class "title-bar__container" ]
+                    [ h2 [ class "title-bar__heading" ] [ text "jvterm" ]
+                    ]
+                ]
+            , main_ []
+                [ section [ class "cli-session__container" ]
+                    [ cliSessionView
+                        model.focussedTerminalInput
+                        (Dict.get model.focussedTerminalID model.terminalSessionsData
+                            |> Maybe.withDefault initialSessionData
+                        )
+                    ]
+                ]
             ]
         ]
     }
