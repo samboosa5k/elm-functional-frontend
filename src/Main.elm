@@ -3,9 +3,9 @@ module Main exposing (main)
 import Array exposing (Array, fromList, push, toList)
 import Browser exposing (Document)
 import Dict exposing (Dict)
-import Html exposing (Attribute, Html, div, h2, header, input, main_, p, pre, section, text)
+import Html exposing (Attribute, Html, div, h2, header, input, main_, nav, p, pre, section, span, text)
 import Html.Attributes exposing (class, id, type_, value)
-import Html.Events exposing (keyCode, on, onInput)
+import Html.Events exposing (keyCode, on, onClick, onInput)
 import Json.Decode as Json
 import Maybe exposing (Maybe)
 import Parser exposing (..)
@@ -113,6 +113,7 @@ type Msg
     | Evaluate
     | Clear
     | CreateSession
+    | FocusSession String
 
 
 
@@ -185,6 +186,9 @@ update msg model =
             in
             ( newModel, Cmd.none )
 
+        FocusSession id_ ->
+            ( { model | focussedTerminalID = id_ }, Cmd.none )
+
 
 
 -- VIEW
@@ -198,7 +202,7 @@ getSessionData { focussedTerminalID, terminalSessionsData } =
 
 terminalSessionList : List TerminalSessionData -> List (Html Msg)
 terminalSessionList terminalSessionsData =
-    List.map (\terminalSessionData -> cliSessionView terminalSessionData.id_ terminalSessionData) terminalSessionsData
+    List.map (\terminalSessionData -> span [ onClick (FocusSession terminalSessionData.id_) ] [ text terminalSessionData.id_ ]) terminalSessionsData
 
 
 view : Model -> Document Msg
@@ -212,6 +216,10 @@ view model =
                     [ h2 [ class "title-bar__heading" ] [ text "jvterm" ]
                     ]
                 ]
+            , nav [ class "nav-menu__container" ]
+                [ section [ class "nav-menu__list" ]
+                    (terminalSessionList (Dict.values model.terminalSessionsData))
+                ]
             , main_ []
                 [ section [ class "cli-session__container" ]
                     [ cliSessionView
@@ -219,8 +227,6 @@ view model =
                         (getSessionData model)
                     ]
                 ]
-            , section [ class "cli-session__container" ]
-                (terminalSessionList (Dict.values model.terminalSessionsData))
             ]
         ]
     }
