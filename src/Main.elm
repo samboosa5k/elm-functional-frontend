@@ -1,15 +1,14 @@
 module Main exposing (main)
 
-import Array exposing (Array, fromList, push, toList)
+import Array exposing (fromList)
 import Browser exposing (Document)
 import Dict exposing (Dict)
 import Html exposing (Attribute, Html, div, h2, header, input, main_, nav, p, pre, section, span, text)
 import Html.Attributes exposing (class, id, type_, value)
 import Html.Events exposing (keyCode, on, onClick, onInput)
 import Json.Decode as Json
-import Maybe exposing (Maybe)
+import Maybe
 import Parser exposing (..)
-import Parser.Advanced exposing (andThen)
 import Platform.Cmd as Cmd exposing (Cmd)
 
 
@@ -99,7 +98,15 @@ initialModel =
 
 createSession : String -> Model -> Model
 createSession title model =
-    { model | terminalCount = model.terminalCount + 1, terminalSessionsData = Dict.insert title { initialSessionData | id_ = title } model.terminalSessionsData }
+    { model
+        | terminalCount = model.terminalCount + 1
+        , terminalSessionsData =
+            Dict.insert title
+                { initialSessionData
+                    | id_ = title
+                }
+                model.terminalSessionsData
+    }
 
 
 
@@ -181,10 +188,24 @@ update msg model =
 
         CreateSession ->
             let
-                newModel =
-                    createSession (String.fromInt model.terminalCount) model
+                -- list from string
+                createArgs =
+                    String.split " " model.activeTextInput
+
+                title =
+                    Maybe.withDefault ("session" ++ String.fromInt model.terminalCount) (Array.get 1 (fromList createArgs))
             in
-            ( newModel, Cmd.none )
+            ( createSession title
+                { model
+                    | terminalCount = model.terminalCount + 1
+                    , focussedTerminalID = title
+                    , terminalSessionsData =
+                        Dict.insert title
+                            { initialSessionData | id_ = title }
+                            model.terminalSessionsData
+                }
+            , Cmd.none
+            )
 
         FocusSession id_ ->
             ( { model | focussedTerminalID = id_ }, Cmd.none )
@@ -202,7 +223,15 @@ getSessionData { focussedTerminalID, terminalSessionsData } =
 
 terminalSessionList : List TerminalSessionData -> List (Html Msg)
 terminalSessionList terminalSessionsData =
-    List.map (\terminalSessionData -> span [ onClick (FocusSession terminalSessionData.id_) ] [ text terminalSessionData.id_ ]) terminalSessionsData
+    List.map
+        (\terminalSessionData ->
+            span
+                [ onClick (FocusSession terminalSessionData.id_)
+                , class "nav-menu__item"
+                ]
+                [ span [] [ text terminalSessionData.id_ ] ]
+        )
+        terminalSessionsData
 
 
 view : Model -> Document Msg
@@ -214,11 +243,11 @@ view model =
             [ header [ class "header__container" ]
                 [ div [ class "title-bar__container" ]
                     [ h2 [ class "title-bar__heading" ] [ text "jvterm" ]
+                    , nav [ class "nav-menu__container" ]
+                        [ div [ class "nav-menu__list" ]
+                            (terminalSessionList (Dict.values model.terminalSessionsData))
+                        ]
                     ]
-                ]
-            , nav [ class "nav-menu__container" ]
-                [ section [ class "nav-menu__list" ]
-                    (terminalSessionList (Dict.values model.terminalSessionsData))
                 ]
             , main_ []
                 [ section [ class "cli-session__container" ]
