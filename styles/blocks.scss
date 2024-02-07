@@ -1,0 +1,89 @@
+@use "_colors.scss" as colors;
+@use "_extends.scss" as extends;
+
+.header {
+    &__container {
+        display: flex;
+        flex-direction: column;
+        grid-column: 1 / auto-fill;
+    }
+}
+
+.title-bar {
+    &__container {
+        position: relative;
+        display: block;
+        padding: 0.5em;
+        background: linear-gradient(to right, colors.$medium-color-rgb, colors.$dark-color-rgb);
+
+
+        @extend %border-bottom-after;
+    }
+
+    &__heading {
+        position: relative;
+        display: block;
+        color: colors.$light-color-rgb;
+    }
+}
+
+.nav-menu {
+    &__container {
+        position: relative;
+        display: block;
+        background: colors.$darker-color-rgb;
+
+        @extend %border-bottom-after;
+    }
+
+    &__list {
+        position: relative;
+        display: flex;
+        flex: 1;
+        flex-direction: row;
+        padding: 0;
+        margin: 0;
+        list-style-type: none;
+        text-transform: uppercase;
+    }
+
+    &__item {
+        position: relative;
+        display: inline-block;
+        background: colors.$darker-color-rgb;
+
+        a,
+        span {
+            position: relative;
+            display: inline-block;
+            padding: 0.5em;
+            color: colors.$darker-color-rgb;
+            background: colors.$light-color-rgb;
+            text-decoration: none;
+        }
+    }
+
+}
+
+.cli-session {
+    &__container {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        color: colors.$light-color-rgb;
+        background: colors.$darker-color-rgb;
+    }
+
+    &__title {
+        position: relative;
+        display: block;
+        padding: 0.5em;
+    }
+
+    &__block {
+        position: relative;
+        display: block;
+        padding: 0.5em;
+    }
+}

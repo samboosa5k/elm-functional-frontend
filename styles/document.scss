@@ -23,12 +23,25 @@ body {
     grid-template-rows: repeat(12, 1fr);
 }
 
+header {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    grid-column: 1 / span 10;
+    grid-row: 1 / span 2;
+    margin: 1em;
+    padding: 1em;
+    background: colors.$dark-color-rgb;
+    border: 1px solid colors.$medium-color-rgb;
+    border-radius: 0.25em;
+}
+
 main {
     position: relative;
     display: flex;
     flex-direction: column;
     grid-column: 2 / span 10;
-    grid-row: 1 / stretch;
+    grid-row: 3 / stretch;
     margin: 1em;
     overflow: hidden;
 
