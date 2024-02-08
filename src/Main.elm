@@ -13,14 +13,14 @@ import Platform.Cmd as Cmd exposing (Cmd)
 
 
 type alias TerminalSessionData =
-    { id_ : String
+    { sessionId : String
     , commandHistory : List String
     , output : List ( String, String )
     }
 
 
-cliOutput : List ( String, String ) -> List (Html msg)
-cliOutput model =
+generateCliOutput : List ( String, String ) -> List (Html msg)
+generateCliOutput model =
     List.map (\( x, y ) -> p [] [ text (x ++ y) ]) model
 
 
@@ -29,8 +29,8 @@ onKeyDown tagger =
     on "keydown" (Json.map tagger keyCode)
 
 
-cliInput : String -> (String -> msg) -> (Int -> msg) -> Html msg
-cliInput model handleInput handleKeyDown =
+generateCliInput : String -> (String -> msg) -> (Int -> msg) -> Html msg
+generateCliInput model handleInput handleKeyDown =
     input
         [ class "terminal-input__field"
         , type_ "text"
@@ -41,8 +41,8 @@ cliInput model handleInput handleKeyDown =
         []
 
 
-handleKeyCode : Int -> Msg
-handleKeyCode keyCode =
+handleInputKeyCode : Int -> Msg
+handleInputKeyCode keyCode =
     case keyCode of
         13 ->
             Evaluate
@@ -51,20 +51,20 @@ handleKeyCode keyCode =
             NoOp
 
 
-cliSessionView : String -> TerminalSessionData -> Html Msg
-cliSessionView activeTextInput model =
+generateCliSessionView : String -> TerminalSessionData -> Html Msg
+generateCliSessionView activeTextInput model =
     div [ class "cli-session__block" ]
         [ div [ class "terminal-input__container" ]
-            (cliOutput model.output)
-        , cliInput activeTextInput
+            (generateCliOutput model.output)
+        , generateCliInput activeTextInput
             Input
-            handleKeyCode
+            handleInputKeyCode
         ]
 
 
 initialSessionData : TerminalSessionData
 initialSessionData =
-    { id_ = "initial"
+    { sessionId = "initial"
     , commandHistory = []
     , output = []
     }
@@ -96,14 +96,14 @@ initialModel =
     }
 
 
-createSession : String -> Model -> Model
-createSession title model =
+createNewSession : String -> Model -> Model
+createNewSession title model =
     { model
         | terminalCount = model.terminalCount + 1
         , terminalSessionsData =
             Dict.insert title
                 { initialSessionData
-                    | id_ = title
+                    | sessionId = title
                 }
                 model.terminalSessionsData
     }
@@ -127,12 +127,21 @@ type Msg
 -- UPDATE
 
 
-commandParser : Parser Msg
-commandParser =
+cliCommandParser : Parser Msg
+cliCommandParser =
     oneOf
         [ map (\_ -> Clear) (keyword "clear")
         , map (\_ -> CreateSession) (keyword "create")
         ]
+
+
+
+-- Helper function to update terminalSessionsData
+
+
+updateTerminalSessionsData : String -> (TerminalSessionData -> TerminalSessionData) -> Model -> Model
+updateTerminalSessionsData id_ updateFn model =
+    { model | terminalSessionsData = Dict.update id_ (Maybe.map updateFn) model.terminalSessionsData }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -150,7 +159,10 @@ update msg model =
         Evaluate ->
             let
                 parsedCommand =
-                    Parser.run commandParser model.activeTextInput
+                    Parser.run cliCommandParser model.activeTextInput
+
+                sessionModel =
+                    getActiveSessionData model
             in
             case parsedCommand of
                 Ok command ->
@@ -158,33 +170,20 @@ update msg model =
 
                 Err _ ->
                     let
-                        sessionModel =
-                            getSessionData model
-
                         evaluatedSessionModel =
                             { sessionModel | output = sessionModel.output ++ [ ( model.activeTextInput, ": command not found" ) ] }
                     in
-                    ( { model
-                        | activeTextInput = ""
-                        , terminalSessionsData = Dict.insert model.focussedTerminalID evaluatedSessionModel model.terminalSessionsData
-                      }
-                    , Cmd.none
-                    )
+                    ( updateTerminalSessionsData model.focussedTerminalID (\_ -> evaluatedSessionModel) model, Cmd.none )
 
         Clear ->
             let
                 sessionModel =
-                    getSessionData model
+                    getActiveSessionData model
 
                 clearedSessionModel =
                     { sessionModel | output = [] }
             in
-            ( { model
-                | activeTextInput = ""
-                , terminalSessionsData = Dict.insert model.focussedTerminalID clearedSessionModel model.terminalSessionsData
-              }
-            , Cmd.none
-            )
+            ( updateTerminalSessionsData model.focussedTerminalID (\_ -> clearedSessionModel) model, Cmd.none )
 
         CreateSession ->
             let
@@ -195,13 +194,13 @@ update msg model =
                 title =
                     Maybe.withDefault ("session" ++ String.fromInt model.terminalCount) (Array.get 1 (fromList createArgs))
             in
-            ( createSession title
+            ( createNewSession title
                 { model
                     | terminalCount = model.terminalCount + 1
                     , focussedTerminalID = title
                     , terminalSessionsData =
                         Dict.insert title
-                            { initialSessionData | id_ = title }
+                            { initialSessionData | sessionId = title }
                             model.terminalSessionsData
                 }
             , Cmd.none
@@ -215,21 +214,21 @@ update msg model =
 -- VIEW
 
 
-getSessionData : Model -> TerminalSessionData
-getSessionData { focussedTerminalID, terminalSessionsData } =
+getActiveSessionData : Model -> TerminalSessionData
+getActiveSessionData { focussedTerminalID, terminalSessionsData } =
     Dict.get focussedTerminalID terminalSessionsData
         |> Maybe.withDefault initialSessionData
 
 
-terminalSessionList : List TerminalSessionData -> List (Html Msg)
-terminalSessionList terminalSessionsData =
+generateTerminalSessionList : List TerminalSessionData -> List (Html Msg)
+generateTerminalSessionList terminalSessionsData =
     List.map
         (\terminalSessionData ->
             span
-                [ onClick (FocusSession terminalSessionData.id_)
+                [ onClick (FocusSession terminalSessionData.sessionId)
                 , class "nav-menu__item"
                 ]
-                [ span [] [ text terminalSessionData.id_ ] ]
+                [ span [] [ text terminalSessionData.sessionId ] ]
         )
         terminalSessionsData
 
@@ -245,15 +244,15 @@ view model =
                     [ h2 [ class "title-bar__heading" ] [ text "jvterm" ]
                     , nav [ class "nav-menu__container" ]
                         [ div [ class "nav-menu__list" ]
-                            (terminalSessionList (Dict.values model.terminalSessionsData))
+                            (generateTerminalSessionList (Dict.values model.terminalSessionsData))
                         ]
                     ]
                 ]
             , main_ []
                 [ section [ class "cli-session__container" ]
-                    [ cliSessionView
+                    [ generateCliSessionView
                         model.activeTextInput
-                        (getSessionData model)
+                        (getActiveSessionData model)
                     ]
                 ]
             ]
